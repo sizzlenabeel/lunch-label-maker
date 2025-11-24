@@ -23,5 +23,5 @@ export interface FoodLabel {
   fontSize: 'normal' | 'small' | 'smaller';
   weekNumber: string;
   isVegan: boolean;
-  price?: string;
+  price: string;
 }

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
+import { supabase } from '@/integrations/supabase/client';
 import type { FoodLabel } from '../types';
-import { supabase } from '../lib/supabase';
 import { getWeek } from 'date-fns';
 import { Leaf, Search } from 'lucide-react';
 import { translateToEnglish } from '../lib/translation';
@@ -17,7 +17,12 @@ interface ProductSuggestion {
   consumption_guidelines: string;
   description: string;
   is_vegan: boolean;
-  price: string | null;
+  price: number | null;
+  translated_name: string | null;
+  translated_ingredients: string | null;
+  translated_allergens: string | null;
+  translated_consumption_guidelines: string | null;
+  translated_description: string | null;
 }
 
 export function LabelForm({ onSubmit }: LabelFormProps) {
@@ -77,7 +82,18 @@ export function LabelForm({ onSubmit }: LabelFormProps) {
         .limit(5);
 
       if (supabaseError) throw supabaseError;
-      setSuggestions(data || []);
+      
+      // Transform data to match ProductSuggestion interface
+      const transformedData: ProductSuggestion[] = (data || []).map(item => ({
+        ...item,
+        translated_ingredients: typeof item.translated_ingredients === 'string' 
+          ? item.translated_ingredients 
+          : item.translated_ingredients 
+            ? JSON.stringify(item.translated_ingredients)
+            : null
+      }));
+      
+      setSuggestions(transformedData);
       setShowSuggestions(true);
     } catch (err) {
       console.error('Error fetching suggestions:', err);
@@ -186,11 +202,14 @@ export function LabelForm({ onSubmit }: LabelFormProps) {
       } else {
         const { data, error } = await supabase
           .from('products')
-          .insert([productData])
+          .insert([{
+            id: crypto.randomUUID(),
+            ...productData
+          }])
           .select('id')
           .single();
         if (error) throw error;
-        productId = data.id;
+        productId = data?.id;
       }
 
       // If successful, pass the data to parent component
