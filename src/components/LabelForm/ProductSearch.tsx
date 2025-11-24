@@ -1,21 +1,6 @@
 import React from 'react';
 import { Search } from 'lucide-react';
-
-interface ProductSuggestion {
-  id: string;
-  name: string;
-  ingredients: string;
-  allergens: string;
-  consumption_guidelines: string;
-  description: string;
-  is_vegan: boolean;
-  price: string | null;
-  translated_name?: string | null;
-  translated_ingredients?: string | null;
-  translated_allergens?: string | null;
-  translated_consumption_guidelines?: string | null;
-  translated_description?: string | null;
-}
+import type { ProductSuggestion } from '../../hooks/useProductSuggestions';
 
 interface ProductSearchProps {
   productName: string;

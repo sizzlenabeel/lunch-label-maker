@@ -61,9 +61,12 @@ export function LabelForm({ onSubmit }: LabelFormProps) {
       isVegan: suggestion.is_vegan
     });
     // Set translation data if available
+    const translatedIngredients = typeof suggestion.translated_ingredients === 'string' 
+      ? suggestion.translated_ingredients 
+      : '';
     setTranslatedData({
       name: suggestion.translated_name || '',
-      ingredients: suggestion.translated_ingredients || '',
+      ingredients: translatedIngredients,
       allergens: suggestion.translated_allergens || '',
       consumptionGuidelines: suggestion.translated_consumption_guidelines || '',
       description: suggestion.translated_description || ''
