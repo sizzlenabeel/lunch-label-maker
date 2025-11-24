@@ -32,7 +32,7 @@ Format the response as a JSON object with the following keys: name, ingredients,
         role: "user", 
         content: prompt + "\n\nFor ingredients and allergens, please provide them as comma-separated values without array notation or quotes." 
       }],
-      model: "gpt-3.5-turbo",
+      model: "gpt-5-nano",
       response_format: { type: "json_object" }
     });
 
