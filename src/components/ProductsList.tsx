@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { getWeek } from 'date-fns';
-import { supabase } from '../lib/supabase';
+import { supabase } from '@/integrations/supabase/client';
 import { AlertTriangle, FileText, Leaf } from 'lucide-react';
 import { NewWeeklyMenuPDF } from './NewWeeklyMenuPDF';
 

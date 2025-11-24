@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { supabase } from '../lib/supabase';
+import { supabase } from '@/integrations/supabase/client';
 
 export interface ProductSuggestion {
   id: string;
@@ -9,9 +9,9 @@ export interface ProductSuggestion {
   consumption_guidelines: string;
   description: string;
   is_vegan: boolean;
-  price: string | null;
+  price: number | null;
   translated_name?: string | null;
-  translated_ingredients?: string | null;
+  translated_ingredients?: any; // Json type from database
   translated_allergens?: string | null;
   translated_consumption_guidelines?: string | null;
   translated_description?: string | null;
