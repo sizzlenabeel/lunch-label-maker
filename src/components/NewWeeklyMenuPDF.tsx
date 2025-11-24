@@ -1,6 +1,6 @@
 import React from 'react';
 import { Document, Page, View, Text, StyleSheet, PDFViewer, Font } from '@react-pdf/renderer';
-import { supabase } from '../lib/supabase';
+import { supabase } from '@/integrations/supabase/client';
 
 interface WeeklyMenuProps {
   weekNumber: number;
@@ -13,13 +13,14 @@ interface MenuItem {
     name: string;
     description: string;
     allergens: string;
+    price?: number | null;
   };
   english?: {
     name: string;
     description: string;
     allergens: string;
+    price?: number | null;
   };
-  price?: string | null;
   isVegan: boolean;
 }
 

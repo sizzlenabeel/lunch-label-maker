@@ -1,4 +1,4 @@
-import { supabase } from '../lib/supabase';
+import { supabase } from '@/integrations/supabase/client';
 import type { FoodLabel } from '../types';
 
 interface ProductData {
@@ -59,10 +59,13 @@ export async function saveProduct(
   } else {
     const { data, error } = await supabase
       .from('products')
-      .insert([productData])
+      .insert([{
+        id: crypto.randomUUID(),
+        ...productData
+      }])
       .select('id')
       .single();
     if (error) throw error;
-    return data.id;
+    return data?.id || '';
   }
 }
