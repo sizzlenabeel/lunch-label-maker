@@ -42,10 +42,10 @@ function App() {
               setActiveView('form');
               setLabelData(null);
             }}
-            className={`flex items-center px-4 py-2 rounded-lg transition-colors ${
+            className={`flex items-center px-4 py-2 rounded-lg border-2 transition-colors ${
               activeView === 'form'
-                ? 'bg-brand text-white'
-                : 'bg-white text-gray-600 hover:bg-gray-50'
+                ? 'bg-orange-500 text-white border-orange-500'
+                : 'bg-white text-orange-500 border-orange-500 hover:bg-orange-50'
             }`}
           >
             <FileText className="h-5 w-5 mr-2" />
@@ -54,10 +54,10 @@ function App() {
           
           <button
             onClick={() => setActiveView('storytel-labels')}
-            className={`flex items-center px-4 py-2 rounded-lg transition-colors ${
+            className={`flex items-center px-4 py-2 rounded-lg border-2 transition-colors ${
               activeView === 'storytel-labels'
-                ? 'bg-purple-600 text-white'
-                : 'bg-white text-purple-600 hover:bg-purple-50'
+                ? 'bg-orange-500 text-white border-orange-500'
+                : 'bg-white text-orange-500 border-orange-500 hover:bg-orange-50'
             }`}
           >
             <Sparkles className="h-5 w-5 mr-2" />
@@ -66,10 +66,10 @@ function App() {
 
           <button
             onClick={() => setActiveView('standard-menu')}
-            className={`flex items-center px-4 py-2 rounded-lg transition-colors ${
+            className={`flex items-center px-4 py-2 rounded-lg border-2 transition-colors ${
               activeView === 'standard-menu'
-                ? 'bg-brand text-white'
-                : 'bg-white text-gray-600 hover:bg-gray-50'
+                ? 'bg-orange-500 text-white border-orange-500'
+                : 'bg-white text-orange-500 border-orange-500 hover:bg-orange-50'
             }`}
           >
             <List className="h-5 w-5 mr-2" />
@@ -78,10 +78,10 @@ function App() {
 
           <button
             onClick={() => setActiveView('storytel-menu')}
-            className={`flex items-center px-4 py-2 rounded-lg transition-colors ${
+            className={`flex items-center px-4 py-2 rounded-lg border-2 transition-colors ${
               activeView === 'storytel-menu'
-                ? 'bg-purple-600 text-white'
-                : 'bg-white text-purple-600 hover:bg-purple-50'
+                ? 'bg-orange-500 text-white border-orange-500'
+                : 'bg-white text-orange-500 border-orange-500 hover:bg-orange-50'
             }`}
           >
             <Sparkles className="h-5 w-5 mr-2" />
@@ -90,10 +90,10 @@ function App() {
 
           <button
             onClick={() => setActiveView('list')}
-            className={`flex items-center px-4 py-2 rounded-lg transition-colors ${
+            className={`flex items-center px-4 py-2 rounded-lg border-2 transition-colors ${
               activeView === 'list'
-                ? 'bg-brand text-white'
-                : 'bg-white text-gray-600 hover:bg-gray-50'
+                ? 'bg-orange-500 text-white border-orange-500'
+                : 'bg-white text-orange-500 border-orange-500 hover:bg-orange-50'
             }`}
           >
             <List className="h-5 w-5 mr-2" />
@@ -118,10 +118,10 @@ function App() {
                       <div className="flex gap-2">
                         <button
                           onClick={() => setActiveLabelType('standard')}
-                          className={`px-3 py-1 rounded text-sm font-medium ${
+                          className={`px-3 py-1 rounded border-2 text-sm font-medium transition-colors ${
                             activeLabelType === 'standard'
-                              ? 'bg-brand text-white'
-                              : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                              ? 'bg-orange-500 text-white border-orange-500'
+                              : 'bg-white text-orange-500 border-orange-500 hover:bg-orange-50'
                           }`}
                           disabled={labelData.isOnlyForStorytel}
                         >
@@ -129,10 +129,10 @@ function App() {
                         </button>
                         <button
                           onClick={() => setActiveLabelType('storytel')}
-                          className={`px-3 py-1 rounded text-sm font-medium ${
+                          className={`px-3 py-1 rounded border-2 text-sm font-medium transition-colors ${
                             activeLabelType === 'storytel'
-                              ? 'bg-purple-600 text-white'
-                              : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                              ? 'bg-orange-500 text-white border-orange-500'
+                              : 'bg-white text-orange-500 border-orange-500 hover:bg-orange-50'
                           }`}
                         >
                           Storytel

@@ -147,12 +147,19 @@ export function LabelForm({ onSubmit }: LabelFormProps) {
     setIsSubmitting(true);
     setError(null);
 
+    console.log('Form submission started with data:', formData);
+    console.log('Translation data:', translatedData);
+    console.log('Selected product ID:', selectedProduct);
+
     try {
-      await saveProduct(formData, translatedData, selectedProduct);
+      const result = await saveProduct(formData, translatedData, selectedProduct);
+      console.log('Product saved successfully, ID:', result);
       onSubmit(formData);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred while saving');
+      const errorMessage = err instanceof Error ? err.message : 'An error occurred while saving';
       console.error('Error saving product:', err);
+      console.error('Error details:', { formData, translatedData, selectedProduct });
+      setError(errorMessage);
     } finally {
       setIsSubmitting(false);
     }
@@ -203,7 +210,7 @@ export function LabelForm({ onSubmit }: LabelFormProps) {
       <button
         type="submit"
         disabled={isSubmitting}
-        className="inline-flex justify-center rounded-md border border-transparent bg-brand py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-brand-600 focus:outline-none focus:ring-2 focus:ring-brand focus:ring-offset-2 mt-6"
+        className="inline-flex justify-center rounded-md border-2 border-transparent bg-orange-500 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 mt-6"
       >
         {isSubmitting ? 'Saving...' : 'Generate Labels'}
       </button>
