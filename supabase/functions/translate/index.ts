@@ -20,10 +20,10 @@ serve(async (req) => {
 
   try {
     const input: TranslationInput = await req.json();
-    const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
+    const OPENAI_API_KEY = Deno.env.get('OPENAI_API_KEY');
     
-    if (!LOVABLE_API_KEY) {
-      throw new Error('LOVABLE_API_KEY is not configured');
+    if (!OPENAI_API_KEY) {
+      throw new Error('OPENAI_API_KEY is not configured');
     }
 
     const prompt = `
@@ -40,25 +40,26 @@ IMPORTANT: For ingredients and allergens, provide them as comma-separated values
 Return a JSON object with these exact keys: name, ingredients, allergens, consumptionGuidelines, description
 `;
 
-    const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
+    const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${LOVABLE_API_KEY}`,
+        'Authorization': `Bearer ${OPENAI_API_KEY}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'google/gemini-2.5-flash',
+        model: 'gpt-5-nano-2025-08-07',
         messages: [
           { role: 'system', content: 'You are a professional translator. Always respond with valid JSON only.' },
           { role: 'user', content: prompt }
         ],
-        response_format: { type: "json_object" }
+        response_format: { type: "json_object" },
+        max_completion_tokens: 1000
       }),
     });
 
     if (!response.ok) {
       const errorText = await response.text();
-      console.error('AI gateway error:', response.status, errorText);
+      console.error('OpenAI API error:', response.status, errorText);
       
       if (response.status === 429) {
         return new Response(
@@ -66,14 +67,14 @@ Return a JSON object with these exact keys: name, ingredients, allergens, consum
           { status: 429, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
         );
       }
-      if (response.status === 402) {
+      if (response.status === 401) {
         return new Response(
-          JSON.stringify({ error: 'Payment required. Please add credits to your Lovable AI workspace.' }), 
-          { status: 402, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+          JSON.stringify({ error: 'Invalid API key. Please check your OpenAI API key configuration.' }), 
+          { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
         );
       }
       
-      throw new Error(`AI gateway error: ${response.status}`);
+      throw new Error(`OpenAI API error: ${response.status}`);
     }
 
     const data = await response.json();
