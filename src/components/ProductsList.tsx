@@ -113,20 +113,20 @@ export function ProductsList() {
               <div className="flex gap-2">
                 <button
                   onClick={() => setMenuType('standard')}
-                  className={`px-3 py-1 rounded text-sm font-medium ${
+                  className={`px-3 py-1 rounded border-2 text-sm font-medium transition-colors ${
                     menuType === 'standard'
-                      ? 'bg-brand text-white'
-                      : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                      ? 'bg-orange-500 text-white border-orange-500'
+                      : 'bg-white text-orange-500 border-orange-500 hover:bg-orange-50'
                   }`}
                 >
                   Standard Menu
                 </button>
                 <button
                   onClick={() => setMenuType('storytel')}
-                  className={`px-3 py-1 rounded text-sm font-medium ${
+                  className={`px-3 py-1 rounded border-2 text-sm font-medium transition-colors ${
                     menuType === 'storytel'
-                      ? 'bg-purple-600 text-white'
-                      : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                      ? 'bg-orange-500 text-white border-orange-500'
+                      : 'bg-white text-orange-500 border-orange-500 hover:bg-orange-50'
                   }`}
                 >
                   Storytel Menu

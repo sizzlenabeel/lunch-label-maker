@@ -1,22 +1,3 @@
-import OpenAI from 'openai';
-
-// Lazy initialization to avoid crash on import
-let openaiClient: OpenAI | null = null;
-
-function getOpenAIClient() {
-  if (!openaiClient) {
-    const apiKey = import.meta.env.VITE_OPENAI_API_KEY;
-    if (!apiKey) {
-      throw new Error('OpenAI API key is not configured. Please add VITE_OPENAI_API_KEY to your .env file.');
-    }
-    openaiClient = new OpenAI({
-      apiKey,
-      dangerouslyAllowBrowser: true
-    });
-  }
-  return openaiClient;
-}
-
 interface TranslationInput {
   name: string;
   ingredients: string;
@@ -26,42 +7,27 @@ interface TranslationInput {
 }
 
 export async function translateToEnglish(input: TranslationInput) {
-  const prompt = `
-Translate the following food product details from Swedish to English. Keep the translations natural and accurate:
-
-Name: ${input.name}
-Ingredients: ${input.ingredients}
-Allergens: ${input.allergens}
-Consumption Guidelines: ${input.consumptionGuidelines}
-Description: ${input.description}
-
-Format the response as a JSON object with the following keys: name, ingredients, allergens, consumptionGuidelines, description
-`;
-
   try {
-    const openai = getOpenAIClient();
-    const completion = await openai.chat.completions.create({
-      messages: [{ 
-        role: "user", 
-        content: prompt + "\n\nFor ingredients and allergens, please provide them as comma-separated values without array notation or quotes." 
-      }],
-      model: "gpt-5-nano",
-      response_format: { type: "json_object" }
-    });
+    const response = await fetch(
+      'https://bovopbgjrgjjratouilb.supabase.co/functions/v1/translate',
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(input),
+      }
+    );
 
-    let response = JSON.parse(completion.choices[0].message.content);
-    
-    // Clean up any array notation in ingredients and allergens
-    if (response.ingredients) {
-      response.ingredients = response.ingredients.replace(/[\[\]"]/g, '').trim();
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.error || 'Translation failed');
     }
-    if (response.allergens) {
-      response.allergens = response.allergens.replace(/[\[\]"]/g, '').trim();
-    }
-    
-    return response as TranslationInput;
+
+    const translation = await response.json();
+    return translation as TranslationInput;
   } catch (error) {
     console.error('Translation error:', error);
-    throw new Error('Failed to translate content');
+    throw new Error(error instanceof Error ? error.message : 'Failed to translate content');
   }
 }

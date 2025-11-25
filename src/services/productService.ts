@@ -55,23 +55,38 @@ export async function saveProduct(
     translated_description: translatedData.description
   };
 
+  console.log('Saving product with data:', productData);
+
   if (productId) {
+    console.log('Updating existing product:', productId);
     const { error } = await supabase
       .from('products')
       .update(productData)
       .eq('id', productId);
-    if (error) throw error;
+    
+    if (error) {
+      console.error('Error updating product:', error);
+      throw new Error(`Failed to update product: ${error.message}`);
+    }
+    console.log('Product updated successfully');
     return productId;
   } else {
+    console.log('Inserting new product');
+    const newId = crypto.randomUUID();
     const { data, error } = await supabase
       .from('products')
       .insert([{
-        id: crypto.randomUUID(),
+        id: newId,
         ...productData
       }])
       .select('id')
       .single();
-    if (error) throw error;
-    return data?.id || '';
+    
+    if (error) {
+      console.error('Error inserting product:', error);
+      throw new Error(`Failed to insert product: ${error.message}`);
+    }
+    console.log('Product inserted successfully:', data);
+    return data?.id || newId;
   }
 }

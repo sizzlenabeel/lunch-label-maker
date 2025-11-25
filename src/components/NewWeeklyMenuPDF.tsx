@@ -243,11 +243,13 @@ export function NewWeeklyMenuPDF({ weekNumber, veganOnly, fontSize }: WeeklyMenu
             allergens,
             price,
             is_vegan,
+            is_only_for_storytel,
             translated_name,
             translated_description,
             translated_allergens
           `)
-          .eq('week_number', weekNumber);
+          .eq('week_number', weekNumber)
+          .or('is_only_for_storytel.eq.false,is_only_for_storytel.is.null');
 
         if (veganOnly) {
           query = query.eq('is_vegan', true);
