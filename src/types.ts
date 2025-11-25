@@ -24,4 +24,7 @@ export interface FoodLabel {
   weekNumber: string;
   isVegan: boolean;
   price: string;
+  isForStorytel: boolean;
+  isOnlyForStorytel: boolean;
+  deliveryDay: string;
 }

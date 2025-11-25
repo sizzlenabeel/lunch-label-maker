@@ -3,12 +3,16 @@ import { getWeek } from 'date-fns';
 import { supabase } from '@/integrations/supabase/client';
 import { AlertTriangle, FileText, Leaf } from 'lucide-react';
 import { NewWeeklyMenuPDF } from './NewWeeklyMenuPDF';
+import { StorytelMenuPDF } from './StorytelMenuPDF';
 
 interface Product {
   name: string;
   description: string;
   allergens: string;
   is_vegan: boolean;
+  is_for_storytel: boolean;
+  is_only_for_storytel: boolean;
+  delivery_day: string | null;
 }
 
 export function ProductsList() {
@@ -20,6 +24,7 @@ export function ProductsList() {
   const [showVeganOnly, setShowVeganOnly] = useState(false);
   const [showMenu, setShowMenu] = useState(false);
   const [menuFontSize, setMenuFontSize] = useState<'normal' | 'small' | 'smaller'>('normal');
+  const [menuType, setMenuType] = useState<'standard' | 'storytel'>('standard');
 
   useEffect(() => {
     async function fetchProducts() {
@@ -27,8 +32,16 @@ export function ProductsList() {
         setLoading(true);
         let query = supabase
           .from('products')
-          .select('name, description, allergens, is_vegan')
-          .eq('week_number', selectedWeek)
+          .select('name, description, allergens, is_vegan, is_for_storytel, is_only_for_storytel, delivery_day')
+          .eq('week_number', selectedWeek);
+
+        // Filter based on menu type
+        if (menuType === 'storytel') {
+          query = query.or('is_for_storytel.eq.true,is_only_for_storytel.eq.true');
+        } else {
+          // Standard menu excludes "only for storytel" items
+          query = query.or('is_only_for_storytel.eq.false,is_only_for_storytel.is.null');
+        }
 
         if (showVeganOnly) {
           query = query.eq('is_vegan', true);
@@ -48,7 +61,7 @@ export function ProductsList() {
     }
 
     fetchProducts();
-  }, [selectedWeek, showVeganOnly]);
+  }, [selectedWeek, showVeganOnly, menuType]);
 
   return (
     <div className="bg-white shadow rounded-lg p-6">
@@ -96,26 +109,57 @@ export function ProductsList() {
           </button>
           
           {showMenu && (
-            <select
-              value={menuFontSize}
-              onChange={(e) => setMenuFontSize(e.target.value as 'normal' | 'small' | 'smaller')}
-              className="rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-sm"
-            >
-              <option value="normal">Normal Size</option>
-              <option value="small">Small Size</option>
-              <option value="smaller">Smaller Size</option>
-            </select>
+            <>
+              <div className="flex gap-2">
+                <button
+                  onClick={() => setMenuType('standard')}
+                  className={`px-3 py-1 rounded text-sm font-medium ${
+                    menuType === 'standard'
+                      ? 'bg-brand text-white'
+                      : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                  }`}
+                >
+                  Standard Menu
+                </button>
+                <button
+                  onClick={() => setMenuType('storytel')}
+                  className={`px-3 py-1 rounded text-sm font-medium ${
+                    menuType === 'storytel'
+                      ? 'bg-purple-600 text-white'
+                      : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                  }`}
+                >
+                  Storytel Menu
+                </button>
+              </div>
+              <select
+                value={menuFontSize}
+                onChange={(e) => setMenuFontSize(e.target.value as 'normal' | 'small' | 'smaller')}
+                className="rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-sm"
+              >
+                <option value="normal">Normal Size</option>
+                <option value="small">Small Size</option>
+                <option value="smaller">Smaller Size</option>
+              </select>
+            </>
           )}
         </div>
       </div>
 
       {showMenu && (
         <div className="mb-6">
-          <NewWeeklyMenuPDF 
-            weekNumber={selectedWeek} 
-            veganOnly={showVeganOnly}
-            fontSize={menuFontSize}
-          />
+          {menuType === 'standard' ? (
+            <NewWeeklyMenuPDF 
+              weekNumber={selectedWeek} 
+              veganOnly={showVeganOnly}
+              fontSize={menuFontSize}
+            />
+          ) : (
+            <StorytelMenuPDF 
+              weekNumber={selectedWeek} 
+              fontSize={menuFontSize}
+            />
+          )}
         </div>
       )}
 
@@ -139,13 +183,32 @@ export function ProductsList() {
               key={index}
               className="border rounded-lg p-4 hover:bg-gray-50 transition-colors"
             >
-              <h3 className="font-medium text-gray-900">{product.name}</h3>
+              <div className="flex justify-between items-start">
+                <h3 className="font-medium text-gray-900">{product.name}</h3>
+                <div className="flex gap-2 flex-wrap">
+                  {product.is_vegan && (
+                    <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                      <Leaf className="w-3 h-3 mr-1" />
+                      Vegan
+                    </span>
+                  )}
+                  {product.is_only_for_storytel && (
+                    <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
+                      Only Storytel
+                    </span>
+                  )}
+                  {product.is_for_storytel && !product.is_only_for_storytel && (
+                    <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-purple-50 text-purple-700">
+                      Also Storytel
+                    </span>
+                  )}
+                </div>
+              </div>
               <p className="text-sm text-gray-600 mt-1">{product.description}</p>
-              {product.is_vegan && (
-                <span className="inline-flex items-center mt-2 px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                  <Leaf className="w-3 h-3 mr-1" />
-                  Vegan
-                </span>
+              {product.delivery_day && (
+                <p className="text-xs text-purple-600 mt-2">
+                  Delivery: {product.delivery_day}
+                </p>
               )}
               {product.allergens && (
                 <p className="text-sm text-red-600 mt-2">
