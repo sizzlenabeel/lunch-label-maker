@@ -10,6 +10,9 @@ export interface ProductSuggestion {
   description: string;
   is_vegan: boolean;
   price: number | null;
+  is_for_storytel: boolean;
+  is_only_for_storytel: boolean;
+  delivery_day: string | null;
   translated_name?: string | null;
   translated_ingredients?: any; // Json type from database
   translated_allergens?: string | null;
@@ -40,6 +43,9 @@ export function useProductSuggestions() {
           description,
           is_vegan,
           price,
+          is_for_storytel,
+          is_only_for_storytel,
+          delivery_day,
           translated_name,
           translated_ingredients,
           translated_allergens,

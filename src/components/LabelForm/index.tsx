@@ -42,9 +42,12 @@ export function LabelForm({ onSubmit }: LabelFormProps) {
     allergens: '',
     consumptionGuidelines: '',
     description: '',
-    fontSize: 'smaller', // Changed from 'normal' to 'smaller'
+    fontSize: 'smaller',
     weekNumber: currentWeek.toString(),
-    isVegan: false
+    isVegan: false,
+    isForStorytel: false,
+    isOnlyForStorytel: false,
+    deliveryDay: ''
   });
 
   const selectSuggestion = (suggestion: ProductSuggestion) => {
@@ -58,7 +61,10 @@ export function LabelForm({ onSubmit }: LabelFormProps) {
       price: suggestion.price?.toString() || '',
       consumptionGuidelines: suggestion.consumption_guidelines,
       description: suggestion.description,
-      isVegan: suggestion.is_vegan
+      isVegan: suggestion.is_vegan,
+      isForStorytel: suggestion.is_for_storytel,
+      isOnlyForStorytel: suggestion.is_only_for_storytel,
+      deliveryDay: suggestion.delivery_day || ''
     });
     // Set translation data if available
     const translatedIngredients = typeof suggestion.translated_ingredients === 'string' 
@@ -84,9 +90,12 @@ export function LabelForm({ onSubmit }: LabelFormProps) {
       allergens: '',
       consumptionGuidelines: '',
       description: '',
-      fontSize: 'smaller', // Changed from 'normal' to 'smaller'
+      fontSize: 'smaller',
       weekNumber: currentWeek.toString(),
-      isVegan: false
+      isVegan: false,
+      isForStorytel: false,
+      isOnlyForStorytel: false,
+      deliveryDay: ''
     });
     setTranslatedData({
       name: '',
@@ -115,7 +124,18 @@ export function LabelForm({ onSubmit }: LabelFormProps) {
 
   const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, checked } = e.target;
-    setFormData(prev => ({ ...prev, [name]: checked }));
+    setFormData(prev => {
+      const newData = { ...prev, [name]: checked };
+      // Auto-check isForStorytel when isOnlyForStorytel is checked
+      if (name === 'isOnlyForStorytel' && checked) {
+        newData.isForStorytel = true;
+      }
+      return newData;
+    });
+  };
+
+  const handleDeliveryDayChange = (day: string) => {
+    setFormData(prev => ({ ...prev, deliveryDay: day }));
   };
 
   const handleGenerateTranslation = async () => {
@@ -159,6 +179,7 @@ export function LabelForm({ onSubmit }: LabelFormProps) {
             handleChange={handleChange}
             handleSelectChange={handleSelectChange}
             handleCheckboxChange={handleCheckboxChange}
+            handleDeliveryDayChange={handleDeliveryDayChange}
           />
         </div>
         

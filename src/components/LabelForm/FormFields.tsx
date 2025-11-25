@@ -13,11 +13,15 @@ interface FormFieldsProps {
     fontSize: 'normal' | 'small' | 'smaller';
     weekNumber: string;
     isVegan: boolean;
+    isForStorytel: boolean;
+    isOnlyForStorytel: boolean;
+    deliveryDay: string;
   };
   currentWeek: number;
   handleChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
   handleSelectChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
   handleCheckboxChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  handleDeliveryDayChange: (day: string) => void;
 }
 
 export function FormFields({
@@ -25,13 +29,16 @@ export function FormFields({
   currentWeek,
   handleChange,
   handleSelectChange,
-  handleCheckboxChange
+  handleCheckboxChange,
+  handleDeliveryDayChange
 }: FormFieldsProps) {
+  const deliveryDays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
+  
   return (
     <>
       <div>
         <label htmlFor="price" className="block text-sm font-medium text-gray-700">
-          Price (SEK)
+          Price (SEK) {formData.isOnlyForStorytel && <span className="text-gray-500 text-xs">(optional for Storytel-only)</span>}
         </label>
         <input
           type="number"
@@ -42,7 +49,7 @@ export function FormFields({
           value={formData.price}
           onChange={handleChange}
           className="mt-1 block w-full rounded-md border border-gray-300 shadow-sm focus:border-brand focus:ring-brand sm:text-sm"
-          required
+          required={!formData.isOnlyForStorytel}
         />
       </div>
 
@@ -59,6 +66,62 @@ export function FormFields({
           <Leaf className="w-4 h-4 mr-1" />
           This product is vegan
         </label>
+      </div>
+
+      <div className="bg-purple-50 p-4 rounded-lg border border-purple-200 space-y-3">
+        <h3 className="text-sm font-semibold text-purple-900">Storytel Options</h3>
+        
+        <div className="flex items-center">
+          <input
+            type="checkbox"
+            id="isForStorytel"
+            name="isForStorytel"
+            checked={formData.isForStorytel}
+            onChange={handleCheckboxChange}
+            className="h-5 w-5 text-purple-600 focus:ring-purple-500 border border-purple-300 rounded"
+          />
+          <label htmlFor="isForStorytel" className="ml-2 block text-sm text-purple-700">
+            Also at Storytel (creates both normal and Storytel labels)
+          </label>
+        </div>
+
+        <div className="flex items-center">
+          <input
+            type="checkbox"
+            id="isOnlyForStorytel"
+            name="isOnlyForStorytel"
+            checked={formData.isOnlyForStorytel}
+            onChange={handleCheckboxChange}
+            className="h-5 w-5 text-purple-600 focus:ring-purple-500 border border-purple-300 rounded"
+          />
+          <label htmlFor="isOnlyForStorytel" className="ml-2 block text-sm text-purple-700">
+            Only for Storytel (Storytel labels and menu only)
+          </label>
+        </div>
+
+        {(formData.isForStorytel || formData.isOnlyForStorytel) && (
+          <div>
+            <label className="block text-sm font-medium text-purple-900 mb-2">
+              Delivery Day (for Storytel Menu) *
+            </label>
+            <div className="flex flex-wrap gap-2">
+              {deliveryDays.map((day) => (
+                <button
+                  key={day}
+                  type="button"
+                  onClick={() => handleDeliveryDayChange(day)}
+                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                    formData.deliveryDay === day
+                      ? 'bg-purple-600 text-white'
+                      : 'bg-white text-purple-700 border border-purple-300 hover:bg-purple-100'
+                  }`}
+                >
+                  {day}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
 
       <div>
