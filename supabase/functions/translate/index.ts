@@ -78,7 +78,29 @@ Return a JSON object with these exact keys: name, ingredients, allergens, consum
     }
 
     const data = await response.json();
-    let translation = JSON.parse(data.choices[0].message.content);
+    console.log('OpenAI response:', JSON.stringify(data, null, 2));
+    
+    // Validate response structure
+    if (!data.choices || !data.choices[0] || !data.choices[0].message) {
+      console.error('Invalid OpenAI response structure:', data);
+      throw new Error('Invalid response from OpenAI API');
+    }
+    
+    const content = data.choices[0].message.content;
+    if (!content || content.trim() === '') {
+      console.error('Empty content in OpenAI response');
+      throw new Error('Empty response from OpenAI API');
+    }
+    
+    console.log('Content to parse:', content);
+    
+    let translation;
+    try {
+      translation = JSON.parse(content);
+    } catch (parseError) {
+      console.error('JSON parse error:', parseError, 'Content:', content);
+      throw new Error('Failed to parse translation response as JSON');
+    }
     
     // Clean up any array notation in ingredients and allergens
     if (translation.ingredients) {
