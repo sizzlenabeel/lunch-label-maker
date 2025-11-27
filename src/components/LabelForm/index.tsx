@@ -124,14 +124,7 @@ export function LabelForm({ onSubmit }: LabelFormProps) {
 
   const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, checked } = e.target;
-    setFormData(prev => {
-      const newData = { ...prev, [name]: checked };
-      // Auto-check isForStorytel when isOnlyForStorytel is checked
-      if (name === 'isOnlyForStorytel' && checked) {
-        newData.isForStorytel = true;
-      }
-      return newData;
-    });
+    setFormData(prev => ({ ...prev, [name]: checked }));
   };
 
   const handleDeliveryDayChange = (day: string) => {
