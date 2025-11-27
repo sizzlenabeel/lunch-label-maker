@@ -53,7 +53,7 @@ Return a JSON object with these exact keys: name, ingredients, allergens, consum
           { role: 'user', content: prompt }
         ],
         response_format: { type: "json_object" },
-        max_completion_tokens: 1000
+        max_completion_tokens: 4000
       }),
     });
 
