@@ -94,14 +94,6 @@ const styles = StyleSheet.create({
     color: '#059669',
     fontFamily: 'SF Pro',
   },
-  storytelBadge: {
-    position: 'absolute',
-    left: 8,
-    bottom: 8,
-    fontSize: 7,
-    color: '#7c3aed',
-    fontFamily: 'SF Pro Bold',
-  },
 });
 
 interface StorytelLabelPDFProps {
@@ -151,7 +143,6 @@ export function StorytelLabelPDF({ data }: StorytelLabelPDFProps) {
         {data.isVegan && (
           <Text style={styles.veganIcon}>Vegan</Text>
         )}
-        <Text style={styles.storytelBadge}>STORYTEL</Text>
       </View>
     );
   };
