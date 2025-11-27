@@ -295,7 +295,7 @@ export function StorytelMenuPDF({ weekNumber, fontSize }: StorytelMenuProps) {
       <Document>
         <Page size="A4" style={styles.page}>
           <View style={styles.header}>
-            <Text style={getStyle('companyName')}>Sizzle x Wester & Wester</Text>
+            <Text style={getStyle('companyName')}>Sizzle</Text>
             <Text style={getStyle('weekInfo')}>Week {weekNumber}</Text>
             <Text style={getStyle('title')}>Storytel Weekly Menu</Text>
           </View>
