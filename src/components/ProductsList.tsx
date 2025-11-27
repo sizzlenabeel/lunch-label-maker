@@ -30,18 +30,11 @@ export function ProductsList() {
     async function fetchProducts() {
       try {
         setLoading(true);
+        // Fetch ALL products for the selected week - no menu type filtering for the list
         let query = supabase
           .from('products')
           .select('name, description, allergens, is_vegan, is_for_storytel, is_only_for_storytel, delivery_day')
           .eq('week_number', selectedWeek);
-
-        // Filter based on menu type
-        if (menuType === 'storytel') {
-          query = query.or('is_for_storytel.eq.true,is_only_for_storytel.eq.true');
-        } else {
-          // Standard menu excludes "only for storytel" items
-          query = query.or('is_only_for_storytel.eq.false,is_only_for_storytel.is.null');
-        }
 
         if (showVeganOnly) {
           query = query.eq('is_vegan', true);
@@ -61,7 +54,7 @@ export function ProductsList() {
     }
 
     fetchProducts();
-  }, [selectedWeek, showVeganOnly, menuType]);
+  }, [selectedWeek, showVeganOnly]);
 
   return (
     <div className="bg-white shadow rounded-lg p-6">

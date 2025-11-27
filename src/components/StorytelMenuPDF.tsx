@@ -2,6 +2,16 @@ import React from 'react';
 import { Document, Page, View, Text, StyleSheet, PDFViewer, Font } from '@react-pdf/renderer';
 import { supabase } from '@/integrations/supabase/client';
 
+// Register fonts at module level (same pattern as StorytelLabelPDF)
+Font.register({
+  family: 'SF Pro',
+  src: 'https://fonts.cdnfonts.com/s/59278/SFPRODISPLAYREGULAR.woff',
+});
+Font.register({
+  family: 'SF Pro Bold',
+  src: 'https://fonts.cdnfonts.com/s/59278/SFPRODISPLAYBOLD.woff',
+});
+
 interface StorytelMenuProps {
   weekNumber: number;
   fontSize: 'normal' | 'small' | 'smaller';
@@ -26,19 +36,19 @@ const styles = StyleSheet.create({
   },
   companyName: {
     fontSize: 18,
-    fontWeight: 'bold',
+    fontFamily: 'SF Pro Bold',
     textAlign: 'center',
     marginBottom: 8,
   },
   companyNameSmall: {
     fontSize: 16,
-    fontWeight: 'bold',
+    fontFamily: 'SF Pro Bold',
     textAlign: 'center',
     marginBottom: 6,
   },
   companyNameSmaller: {
     fontSize: 14,
-    fontWeight: 'bold',
+    fontFamily: 'SF Pro Bold',
     textAlign: 'center',
     marginBottom: 4,
   },
@@ -62,21 +72,21 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 24,
-    fontWeight: 'bold',
+    fontFamily: 'SF Pro Bold',
     textAlign: 'center',
     marginBottom: 10,
     color: '#7c3aed',
   },
   titleSmall: {
     fontSize: 20,
-    fontWeight: 'bold',
+    fontFamily: 'SF Pro Bold',
     textAlign: 'center',
     marginBottom: 8,
     color: '#7c3aed',
   },
   titleSmaller: {
     fontSize: 16,
-    fontWeight: 'bold',
+    fontFamily: 'SF Pro Bold',
     textAlign: 'center',
     marginBottom: 6,
     color: '#7c3aed',
@@ -92,7 +102,7 @@ const styles = StyleSheet.create({
   },
   dayHeader: {
     fontSize: 16,
-    fontWeight: 'bold',
+    fontFamily: 'SF Pro Bold',
     marginBottom: 12,
     color: '#1a1a1a',
     borderBottom: '2pt solid #7c3aed',
@@ -100,7 +110,7 @@ const styles = StyleSheet.create({
   },
   dayHeaderSmall: {
     fontSize: 14,
-    fontWeight: 'bold',
+    fontFamily: 'SF Pro Bold',
     marginBottom: 10,
     color: '#1a1a1a',
     borderBottom: '2pt solid #7c3aed',
@@ -108,7 +118,7 @@ const styles = StyleSheet.create({
   },
   dayHeaderSmaller: {
     fontSize: 12,
-    fontWeight: 'bold',
+    fontFamily: 'SF Pro Bold',
     marginBottom: 8,
     color: '#1a1a1a',
     borderBottom: '2pt solid #7c3aed',
@@ -128,17 +138,17 @@ const styles = StyleSheet.create({
   },
   itemName: {
     fontSize: 13,
-    fontWeight: 'bold',
+    fontFamily: 'SF Pro Bold',
     marginBottom: 4,
   },
   itemNameSmall: {
     fontSize: 11,
-    fontWeight: 'bold',
+    fontFamily: 'SF Pro Bold',
     marginBottom: 3,
   },
   itemNameSmaller: {
     fontSize: 9,
-    fontWeight: 'bold',
+    fontFamily: 'SF Pro Bold',
     marginBottom: 2,
   },
   description: {
@@ -159,19 +169,19 @@ const styles = StyleSheet.create({
   allergens: {
     fontSize: 10,
     color: '#dc2626',
-    fontWeight: 'bold',
+    fontFamily: 'SF Pro Bold',
     marginBottom: 2,
   },
   allergensSmall: {
     fontSize: 8,
     color: '#dc2626',
-    fontWeight: 'bold',
+    fontFamily: 'SF Pro Bold',
     marginBottom: 2,
   },
   allergensSmaller: {
     fontSize: 7,
     color: '#dc2626',
-    fontWeight: 'bold',
+    fontFamily: 'SF Pro Bold',
     marginBottom: 1,
   },
   veganBadge: {
@@ -213,30 +223,12 @@ export function StorytelMenuPDF({ weekNumber, fontSize }: StorytelMenuProps) {
   const [menuItems, setMenuItems] = React.useState<StorytelMenuItem[]>([]);
   const [loading, setLoading] = React.useState(true);
   const [error, setError] = React.useState<string | null>(null);
-  const [fontsLoaded, setFontsLoaded] = React.useState(false);
-
-  React.useEffect(() => {
-    const loadFonts = async () => {
-      await Font.register({
-        family: 'SF Pro',
-        src: 'https://fonts.cdnfonts.com/s/59278/SFPRODISPLAYREGULAR.woff',
-        fontWeight: 'normal'
-      });
-      await Font.register({
-        family: 'SF Pro',
-        src: 'https://fonts.cdnfonts.com/s/59278/SFPRODISPLAYBOLD.woff',
-        fontWeight: 'bold'
-      });
-      setFontsLoaded(true);
-    };
-    loadFonts();
-  }, []);
 
   const getStyle = (baseStyle: string) => {
     const styleMap = {
-      normal: styles[baseStyle],
-      small: styles[`${baseStyle}Small`] || styles[baseStyle],
-      smaller: styles[`${baseStyle}Smaller`] || styles[baseStyle]
+      normal: styles[baseStyle as keyof typeof styles],
+      small: styles[`${baseStyle}Small` as keyof typeof styles] || styles[baseStyle as keyof typeof styles],
+      smaller: styles[`${baseStyle}Smaller` as keyof typeof styles] || styles[baseStyle as keyof typeof styles]
     };
     return styleMap[fontSize];
   };
@@ -287,12 +279,12 @@ export function StorytelMenuPDF({ weekNumber, fontSize }: StorytelMenuProps) {
     fetchMenuItems();
   }, [weekNumber]);
 
-  if (loading || !fontsLoaded) {
-    return <div>Loading Storytel menu...</div>;
+  if (loading) {
+    return <div className="p-4 text-center">Loading Storytel menu...</div>;
   }
 
   if (error) {
-    return <div>Error: {error}</div>;
+    return <div className="p-4 text-center text-red-600">Error: {error}</div>;
   }
 
   const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
