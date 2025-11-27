@@ -47,7 +47,7 @@ Return a JSON object with these exact keys: name, ingredients, allergens, consum
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'gpt-5-nano-2025-08-07',
+        model: 'gpt-4o-mini',
         messages: [
           { role: 'system', content: 'You are a professional translator. Always respond with valid JSON only.' },
           { role: 'user', content: prompt }
