@@ -201,19 +201,16 @@ const styles = StyleSheet.create({
   },
   noDishes: {
     fontSize: 10,
-    fontStyle: 'italic',
     color: '#6b7280',
     paddingLeft: 10,
   },
   noDishesSmall: {
     fontSize: 9,
-    fontStyle: 'italic',
     color: '#6b7280',
     paddingLeft: 8,
   },
   noDishesSmaller: {
     fontSize: 8,
-    fontStyle: 'italic',
     color: '#6b7280',
     paddingLeft: 6,
   },
