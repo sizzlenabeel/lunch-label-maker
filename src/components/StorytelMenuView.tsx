@@ -49,7 +49,7 @@ export function StorytelMenuView() {
         </p>
       </div>
 
-      <StorytelMenuPDF weekNumber={selectedWeek} fontSize={fontSize} />
+      <StorytelMenuPDF key={`storytel-menu-${selectedWeek}-${fontSize}`} weekNumber={selectedWeek} fontSize={fontSize} />
     </div>
   );
 }

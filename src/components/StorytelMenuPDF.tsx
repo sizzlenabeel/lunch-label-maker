@@ -243,6 +243,7 @@ export function StorytelMenuPDF({ weekNumber, fontSize }: StorytelMenuProps) {
 
   React.useEffect(() => {
     async function fetchMenuItems() {
+      console.log(`[StorytelMenuPDF] Fetching items for week ${weekNumber}...`);
       try {
         setLoading(true);
         
@@ -261,6 +262,8 @@ export function StorytelMenuPDF({ weekNumber, fontSize }: StorytelMenuProps) {
 
         if (error) throw error;
 
+        console.log(`[StorytelMenuPDF] Raw data for week ${weekNumber}:`, data);
+
         const items: StorytelMenuItem[] = (data || [])
           .filter(product => product.translated_name)
           .map((product) => ({
@@ -271,6 +274,7 @@ export function StorytelMenuPDF({ weekNumber, fontSize }: StorytelMenuProps) {
             deliveryDay: product.delivery_day || '',
           }));
 
+        console.log(`[StorytelMenuPDF] Processed ${items.length} items for week ${weekNumber}`);
         setMenuItems(items);
       } catch (err) {
         console.error('Error fetching Storytel menu items:', err);
