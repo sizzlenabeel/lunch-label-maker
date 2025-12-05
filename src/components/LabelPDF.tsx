@@ -157,9 +157,6 @@ export function LabelPDF({ data }: LabelPDFProps) {
         <Text style={getTextStyle()}>Ingredienser: {data.ingredients}</Text>
         <View style={styles.allergensRow}>
           <Text style={getAllergensStyle()}>Allergener: {data.allergens}</Text>
-          {data.price && (
-            <Text style={getAllergensStyle()}>{data.price} kr</Text>
-          )}
         </View>
         <Text style={getTextStyle()}>{data.consumptionGuidelines}</Text>
         <Text style={getTextStyle()}>{data.description}</Text>
