@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { getWeek } from 'date-fns';
 import type { FoodLabel } from '../../types';
 import { FormFields } from './FormFields';
@@ -124,15 +124,30 @@ export function LabelForm({ onSubmit }: LabelFormProps) {
 
   const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, checked } = e.target;
-    setFormData(prev => ({ ...prev, [name]: checked }));
+    
+    // Make Storytel checkboxes mutually exclusive
+    if (name === 'isOnlyForStorytel' && checked) {
+      setFormData(prev => ({ ...prev, isOnlyForStorytel: true, isForStorytel: false }));
+    } else if (name === 'isForStorytel' && checked) {
+      setFormData(prev => ({ ...prev, isForStorytel: true, isOnlyForStorytel: false }));
+    } else {
+      setFormData(prev => ({ ...prev, [name]: checked }));
+    }
   };
 
   const handleDeliveryDayChange = (day: string) => {
     setFormData(prev => ({ ...prev, deliveryDay: day }));
   };
 
+  // Debug: Monitor weekNumber changes
+  useEffect(() => {
+    console.log('DEBUG: weekNumber changed to:', formData.weekNumber);
+  }, [formData.weekNumber]);
+
   const handleGenerateTranslation = async () => {
+    console.log('DEBUG: BEFORE translation - weekNumber:', formData.weekNumber);
     await generateTranslation(formData);
+    console.log('DEBUG: AFTER translation - weekNumber:', formData.weekNumber);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
