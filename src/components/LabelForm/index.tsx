@@ -47,7 +47,8 @@ export function LabelForm({ onSubmit }: LabelFormProps) {
     isVegan: false,
     isForStorytel: false,
     isOnlyForStorytel: false,
-    deliveryDay: ''
+    deliveryDay: '',
+    isSnack: false
   });
 
   const selectSuggestion = (suggestion: ProductSuggestion) => {
@@ -64,6 +65,7 @@ export function LabelForm({ onSubmit }: LabelFormProps) {
       isVegan: suggestion.is_vegan,
       isForStorytel: suggestion.is_for_storytel,
       isOnlyForStorytel: suggestion.is_only_for_storytel,
+      isSnack: suggestion.is_snack || false,
       deliveryDay: suggestion.delivery_day || ''
     });
     // Set translation data if available
@@ -95,7 +97,8 @@ export function LabelForm({ onSubmit }: LabelFormProps) {
       isVegan: false,
       isForStorytel: false,
       isOnlyForStorytel: false,
-      deliveryDay: ''
+      deliveryDay: '',
+      isSnack: false
     });
     setTranslatedData({
       name: '',
@@ -125,8 +128,12 @@ export function LabelForm({ onSubmit }: LabelFormProps) {
   const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, checked } = e.target;
     
+    // Handle snack checkbox - disable storytel options when snack is checked
+    if (name === 'isSnack' && checked) {
+      setFormData(prev => ({ ...prev, isSnack: true, isForStorytel: false, isOnlyForStorytel: false }));
+    }
     // Make Storytel checkboxes mutually exclusive
-    if (name === 'isOnlyForStorytel' && checked) {
+    else if (name === 'isOnlyForStorytel' && checked) {
       setFormData(prev => ({ ...prev, isOnlyForStorytel: true, isForStorytel: false }));
     } else if (name === 'isForStorytel' && checked) {
       setFormData(prev => ({ ...prev, isForStorytel: true, isOnlyForStorytel: false }));

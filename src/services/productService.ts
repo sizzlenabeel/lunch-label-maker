@@ -15,6 +15,7 @@ interface ProductData {
   is_for_storytel: boolean;
   is_only_for_storytel: boolean;
   delivery_day: string;
+  is_snack: boolean;
   translated_name?: string | null;
   translated_ingredients?: string | null;
   translated_allergens?: string | null;
@@ -48,6 +49,7 @@ export async function saveProduct(
     is_for_storytel: formData.isForStorytel,
     is_only_for_storytel: formData.isOnlyForStorytel,
     delivery_day: formData.deliveryDay,
+    is_snack: formData.isSnack,
     translated_name: translatedData.name,
     translated_ingredients: translatedData.ingredients,
     translated_allergens: translatedData.allergens,

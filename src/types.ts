@@ -27,4 +27,5 @@ export interface FoodLabel {
   isForStorytel: boolean;
   isOnlyForStorytel: boolean;
   deliveryDay: string;
+  isSnack: boolean;
 }

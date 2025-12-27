@@ -27,6 +27,7 @@ export type Database = {
           ingredients: string | null
           is_for_storytel: boolean | null
           is_only_for_storytel: boolean | null
+          is_snack: boolean | null
           is_vegan: boolean | null
           name: string | null
           price: number | null
@@ -50,6 +51,7 @@ export type Database = {
           ingredients?: string | null
           is_for_storytel?: boolean | null
           is_only_for_storytel?: boolean | null
+          is_snack?: boolean | null
           is_vegan?: boolean | null
           name?: string | null
           price?: number | null
@@ -73,6 +75,7 @@ export type Database = {
           ingredients?: string | null
           is_for_storytel?: boolean | null
           is_only_for_storytel?: boolean | null
+          is_snack?: boolean | null
           is_vegan?: boolean | null
           name?: string | null
           price?: number | null

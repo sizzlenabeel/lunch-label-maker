@@ -7,12 +7,14 @@ import { ProductsList } from './components/ProductsList';
 import { StorytelLabelsView } from './components/StorytelLabelsView';
 import { StorytelMenuView } from './components/StorytelMenuView';
 import { StandardMenuView } from './components/StandardMenuView';
+import { SnackLabelsView } from './components/SnackLabelsView';
+import { SnackMenuView } from './components/SnackMenuView';
 import type { FoodLabel } from './types';
-import { FileText, List, Sparkles } from 'lucide-react';
+import { FileText, List, Sparkles, Cookie } from 'lucide-react';
 
 function App() {
   const [labelData, setLabelData] = useState<FoodLabel | null>(null);
-  const [activeView, setActiveView] = useState<'form' | 'list' | 'storytel-labels' | 'storytel-menu' | 'standard-menu'>('form');
+  const [activeView, setActiveView] = useState<'form' | 'list' | 'storytel-labels' | 'storytel-menu' | 'standard-menu' | 'snack-labels' | 'snack-menu'>('form');
   const [previewFontSize, setPreviewFontSize] = useState<'normal' | 'small' | 'smaller'>('normal');
   const [activeLabelType, setActiveLabelType] = useState<'standard' | 'storytel'>('standard');
 
@@ -86,6 +88,30 @@ function App() {
           >
             <Sparkles className="h-5 w-5 mr-2" />
             Storytel Menu
+          </button>
+
+          <button
+            onClick={() => setActiveView('snack-labels')}
+            className={`flex items-center px-4 py-2 rounded-lg border-2 transition-colors ${
+              activeView === 'snack-labels'
+                ? 'bg-amber-500 text-white border-amber-500'
+                : 'bg-white text-amber-600 border-amber-500 hover:bg-amber-50'
+            }`}
+          >
+            <Cookie className="h-5 w-5 mr-2" />
+            Snack Labels
+          </button>
+
+          <button
+            onClick={() => setActiveView('snack-menu')}
+            className={`flex items-center px-4 py-2 rounded-lg border-2 transition-colors ${
+              activeView === 'snack-menu'
+                ? 'bg-amber-500 text-white border-amber-500'
+                : 'bg-white text-amber-600 border-amber-500 hover:bg-amber-50'
+            }`}
+          >
+            <Cookie className="h-5 w-5 mr-2" />
+            Snack Menu
           </button>
 
           <button
@@ -169,6 +195,10 @@ function App() {
             <StorytelMenuView />
           ) : activeView === 'standard-menu' ? (
             <StandardMenuView />
+          ) : activeView === 'snack-labels' ? (
+            <SnackLabelsView />
+          ) : activeView === 'snack-menu' ? (
+            <SnackMenuView />
           ) : (
             <ProductsList />
           )}
