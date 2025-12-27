@@ -2,13 +2,13 @@ import React from 'react';
 import { Document, Page, View, Text, StyleSheet, PDFViewer, Font } from '@react-pdf/renderer';
 import { supabase } from '@/integrations/supabase/client';
 
-interface WeeklyMenuProps {
+interface SnackMenuProps {
   weekNumber: number;
   veganOnly: boolean;
   fontSize: 'normal' | 'small' | 'smaller';
 }
 
-interface MenuItem {
+interface SnackMenuItem {
   original: {
     name: string;
     description: string;
@@ -26,7 +26,7 @@ interface MenuItem {
 
 const styles = StyleSheet.create({
   page: {
-    padding: '40 11.34',  // 0.4cm = 11.34pt
+    padding: '40 11.34',
     backgroundColor: 'white',
     fontFamily: 'SF Pro',
   },
@@ -73,25 +73,25 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: 'bold',
     textAlign: 'center',
-    marginBottom: 7.0875, // 0.25cm = 7.0875pt
-    color: '#1a1a1a',
+    marginBottom: 7.0875,
+    color: '#d97706', // amber-600
   },
   titleSmall: {
     fontSize: 20,
     fontWeight: 'bold',
     textAlign: 'center',
     marginBottom: 7.0875,
-    color: '#1a1a1a',
+    color: '#d97706',
   },
   titleSmaller: {
     fontSize: 16,
     fontWeight: 'bold',
     textAlign: 'center',
     marginBottom: 7.0875,
-    color: '#1a1a1a',
+    color: '#d97706',
   },
   menuItem: {
-    marginBottom: 10.375, // Reduced by 50%
+    marginBottom: 10.375,
   },
   menuItemSmall: {
     marginBottom: 7.875,
@@ -197,8 +197,8 @@ const styles = StyleSheet.create({
   },
 });
 
-export function NewWeeklyMenuPDF({ weekNumber, veganOnly, fontSize }: WeeklyMenuProps) {
-  const [menuItems, setMenuItems] = React.useState<MenuItem[]>([]);
+export function SnackMenuPDF({ weekNumber, veganOnly, fontSize }: SnackMenuProps) {
+  const [menuItems, setMenuItems] = React.useState<SnackMenuItem[]>([]);
   const [loading, setLoading] = React.useState(true);
   const [error, setError] = React.useState<string | null>(null);
   const [fontsLoaded, setFontsLoaded] = React.useState(false);
@@ -222,9 +222,9 @@ export function NewWeeklyMenuPDF({ weekNumber, veganOnly, fontSize }: WeeklyMenu
 
   const getStyle = (baseStyle: string) => {
     const styleMap = {
-      normal: styles[baseStyle],
-      small: styles[`${baseStyle}Small`] || styles[baseStyle],
-      smaller: styles[`${baseStyle}Smaller`] || styles[baseStyle]
+      normal: styles[baseStyle as keyof typeof styles],
+      small: styles[`${baseStyle}Small` as keyof typeof styles] || styles[baseStyle as keyof typeof styles],
+      smaller: styles[`${baseStyle}Smaller` as keyof typeof styles] || styles[baseStyle as keyof typeof styles]
     };
     return styleMap[fontSize];
   };
@@ -234,7 +234,6 @@ export function NewWeeklyMenuPDF({ weekNumber, veganOnly, fontSize }: WeeklyMenu
       try {
         setLoading(true);
         
-        // Build the query
         let query = supabase
           .from('products')
           .select(`
@@ -243,15 +242,12 @@ export function NewWeeklyMenuPDF({ weekNumber, veganOnly, fontSize }: WeeklyMenu
             allergens,
             price,
             is_vegan,
-            is_only_for_storytel,
-            is_snack,
             translated_name,
             translated_description,
             translated_allergens
           `)
           .eq('week_number', weekNumber)
-          .or('is_only_for_storytel.eq.false,is_only_for_storytel.is.null')
-          .or('is_snack.eq.false,is_snack.is.null');
+          .eq('is_snack', true);
 
         if (veganOnly) {
           query = query.eq('is_vegan', true);
@@ -261,8 +257,7 @@ export function NewWeeklyMenuPDF({ weekNumber, veganOnly, fontSize }: WeeklyMenu
 
         if (error) throw error;
 
-        // Transform the data
-        const items: MenuItem[] = (data || []).map((product) => ({
+        const items: SnackMenuItem[] = (data || []).map((product) => ({
           original: {
             name: product.name,
             description: product.description,
@@ -280,7 +275,7 @@ export function NewWeeklyMenuPDF({ weekNumber, veganOnly, fontSize }: WeeklyMenu
 
         setMenuItems(items);
       } catch (err) {
-        console.error('Error fetching menu items:', err);
+        console.error('Error fetching snack menu items:', err);
         setError(err instanceof Error ? err.message : 'Failed to load menu items');
       } finally {
         setLoading(false);
@@ -291,14 +286,14 @@ export function NewWeeklyMenuPDF({ weekNumber, veganOnly, fontSize }: WeeklyMenu
   }, [weekNumber, veganOnly]);
 
   if (loading || !fontsLoaded) {
-    return <div>Loading menu...</div>;
+    return <div>Loading snack menu...</div>;
   }
 
   if (error) {
     return <div>Error: {error}</div>;
   }
 
-  const MenuItemComponent = ({ item, isEnglish = false }: { item: MenuItem; isEnglish?: boolean }) => {
+  const MenuItemComponent = ({ item, isEnglish = false }: { item: SnackMenuItem; isEnglish?: boolean }) => {
     const content = isEnglish ? item.english : item.original;
 
     if (isEnglish && !content) {
@@ -333,7 +328,7 @@ export function NewWeeklyMenuPDF({ weekNumber, veganOnly, fontSize }: WeeklyMenu
             <Text style={getStyle('companyName')}>Sizzle x Wester & Wester</Text>
             <Text style={getStyle('weekInfo')}>Week {weekNumber}</Text>
             <Text style={getStyle('title')}>
-              {veganOnly ? 'Vegan Menu' : 'Weekly Menu'}
+              {veganOnly ? 'Vegan Snacks' : 'Snack Menu'}
             </Text>
           </View>
 

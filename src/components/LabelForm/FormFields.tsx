@@ -1,5 +1,5 @@
 import React from 'react';
-import { Leaf } from 'lucide-react';
+import { Leaf, Cookie } from 'lucide-react';
 
 interface FormFieldsProps {
   formData: {
@@ -16,6 +16,7 @@ interface FormFieldsProps {
     isForStorytel: boolean;
     isOnlyForStorytel: boolean;
     deliveryDay: string;
+    isSnack: boolean;
   };
   currentWeek: number;
   handleChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
@@ -68,7 +69,24 @@ export function FormFields({
         </label>
       </div>
 
-      <div className="bg-purple-50 p-4 rounded-lg border border-purple-200 space-y-3">
+      {/* Snack Option */}
+      <div className="flex items-center bg-amber-50 p-3 rounded-lg border border-amber-200">
+        <input
+          type="checkbox"
+          id="isSnack"
+          name="isSnack"
+          checked={formData.isSnack}
+          onChange={handleCheckboxChange}
+          className="h-5 w-5 text-amber-600 focus:ring-amber-500 border border-amber-300 rounded"
+        />
+        <label htmlFor="isSnack" className="ml-2 block text-sm text-amber-700 font-medium flex items-center">
+          <Cookie className="w-4 h-4 mr-1" />
+          This is a snack (separate labels & menu with prices)
+        </label>
+      </div>
+
+      {/* Storytel Options - disabled when snack is checked */}
+      <div className={`bg-purple-50 p-4 rounded-lg border border-purple-200 space-y-3 ${formData.isSnack ? 'opacity-50' : ''}`}>
         <h3 className="text-sm font-semibold text-purple-900">Storytel Options</h3>
         
         <div className={`flex items-center ${formData.isOnlyForStorytel ? 'opacity-50' : ''}`}>
@@ -78,7 +96,7 @@ export function FormFields({
             name="isForStorytel"
             checked={formData.isForStorytel}
             onChange={handleCheckboxChange}
-            disabled={formData.isOnlyForStorytel}
+            disabled={formData.isOnlyForStorytel || formData.isSnack}
             className="h-5 w-5 text-purple-600 focus:ring-purple-500 border border-purple-300 rounded disabled:cursor-not-allowed"
           />
           <label htmlFor="isForStorytel" className="ml-2 block text-sm text-purple-700">
@@ -93,7 +111,7 @@ export function FormFields({
             name="isOnlyForStorytel"
             checked={formData.isOnlyForStorytel}
             onChange={handleCheckboxChange}
-            disabled={formData.isForStorytel}
+            disabled={formData.isForStorytel || formData.isSnack}
             className="h-5 w-5 text-purple-600 focus:ring-purple-500 border border-purple-300 rounded disabled:cursor-not-allowed"
           />
           <label htmlFor="isOnlyForStorytel" className="ml-2 block text-sm text-purple-700">
@@ -101,7 +119,7 @@ export function FormFields({
           </label>
         </div>
 
-        {(formData.isForStorytel || formData.isOnlyForStorytel) && (
+        {(formData.isForStorytel || formData.isOnlyForStorytel) && !formData.isSnack && (
           <div>
             <label className="block text-sm font-medium text-purple-900 mb-2">
               Delivery Day (for Storytel Menu) *

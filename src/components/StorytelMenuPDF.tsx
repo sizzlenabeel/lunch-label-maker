@@ -243,10 +243,12 @@ export function StorytelMenuPDF({ weekNumber, fontSize }: StorytelMenuProps) {
             translated_description,
             translated_allergens,
             is_vegan,
-            delivery_day
+            delivery_day,
+            is_snack
           `)
           .eq('week_number', weekNumber)
           .or('is_for_storytel.eq.true,is_only_for_storytel.eq.true')
+          .or('is_snack.eq.false,is_snack.is.null')
           .not('delivery_day', 'is', null);
 
         if (error) throw error;

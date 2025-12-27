@@ -12,6 +12,7 @@ export interface ProductSuggestion {
   price: number | null;
   is_for_storytel: boolean;
   is_only_for_storytel: boolean;
+  is_snack: boolean;
   delivery_day: string | null;
   translated_name?: string | null;
   translated_ingredients?: any; // Json type from database
@@ -45,6 +46,7 @@ export function useProductSuggestions() {
           price,
           is_for_storytel,
           is_only_for_storytel,
+          is_snack,
           delivery_day,
           translated_name,
           translated_ingredients,
