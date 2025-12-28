@@ -38,93 +38,108 @@ function App() {
           </h1>
         </div>
 
-        <div className="flex flex-wrap justify-center gap-3 mb-6">
-          <button
-            onClick={() => {
-              setActiveView('form');
-              setLabelData(null);
-            }}
-            className={`flex items-center px-4 py-2 rounded-lg border-2 transition-colors ${
-              activeView === 'form'
-                ? 'bg-orange-500 text-white border-orange-500'
-                : 'bg-white text-orange-500 border-orange-500 hover:bg-orange-50'
-            }`}
-          >
-            <FileText className="h-5 w-5 mr-2" />
-            Create Labels
-          </button>
-          
-          <button
-            onClick={() => setActiveView('storytel-labels')}
-            className={`flex items-center px-4 py-2 rounded-lg border-2 transition-colors ${
-              activeView === 'storytel-labels'
-                ? 'bg-orange-500 text-white border-orange-500'
-                : 'bg-white text-orange-500 border-orange-500 hover:bg-orange-50'
-            }`}
-          >
-            <Sparkles className="h-5 w-5 mr-2" />
-            Storytel Labels
-          </button>
+        {/* Navigation Categories */}
+        <div className="flex flex-wrap justify-center gap-6 mb-6">
+          {/* Sizzle Category */}
+          <div className="flex flex-col items-center">
+            <span className="text-xs font-semibold text-orange-600 mb-2 uppercase tracking-wide">Sizzle</span>
+            <div className="flex gap-2">
+              <button
+                onClick={() => {
+                  setActiveView('form');
+                  setLabelData(null);
+                }}
+                className={`flex items-center px-4 py-2 rounded-lg border-2 transition-colors ${
+                  activeView === 'form'
+                    ? 'bg-orange-500 text-white border-orange-500'
+                    : 'bg-white text-orange-600 border-orange-400 hover:bg-orange-50'
+                }`}
+              >
+                <FileText className="h-5 w-5 mr-2" />
+                Labels
+              </button>
+              <button
+                onClick={() => setActiveView('standard-menu')}
+                className={`flex items-center px-4 py-2 rounded-lg border-2 transition-colors ${
+                  activeView === 'standard-menu'
+                    ? 'bg-orange-500 text-white border-orange-500'
+                    : 'bg-white text-orange-600 border-orange-400 hover:bg-orange-50'
+                }`}
+              >
+                <List className="h-5 w-5 mr-2" />
+                Menu
+              </button>
+              <button
+                onClick={() => setActiveView('list')}
+                className={`flex items-center px-4 py-2 rounded-lg border-2 transition-colors ${
+                  activeView === 'list'
+                    ? 'bg-orange-500 text-white border-orange-500'
+                    : 'bg-white text-orange-600 border-orange-400 hover:bg-orange-50'
+                }`}
+              >
+                <List className="h-5 w-5 mr-2" />
+                All Products
+              </button>
+            </div>
+          </div>
 
-          <button
-            onClick={() => setActiveView('standard-menu')}
-            className={`flex items-center px-4 py-2 rounded-lg border-2 transition-colors ${
-              activeView === 'standard-menu'
-                ? 'bg-orange-500 text-white border-orange-500'
-                : 'bg-white text-orange-500 border-orange-500 hover:bg-orange-50'
-            }`}
-          >
-            <List className="h-5 w-5 mr-2" />
-            Standard Menu
-          </button>
+          {/* Storytel Category */}
+          <div className="flex flex-col items-center">
+            <span className="text-xs font-semibold text-purple-600 mb-2 uppercase tracking-wide">Storytel</span>
+            <div className="flex gap-2">
+              <button
+                onClick={() => setActiveView('storytel-labels')}
+                className={`flex items-center px-4 py-2 rounded-lg border-2 transition-colors ${
+                  activeView === 'storytel-labels'
+                    ? 'bg-purple-500 text-white border-purple-500'
+                    : 'bg-white text-purple-600 border-purple-400 hover:bg-purple-50'
+                }`}
+              >
+                <Sparkles className="h-5 w-5 mr-2" />
+                Labels
+              </button>
+              <button
+                onClick={() => setActiveView('storytel-menu')}
+                className={`flex items-center px-4 py-2 rounded-lg border-2 transition-colors ${
+                  activeView === 'storytel-menu'
+                    ? 'bg-purple-500 text-white border-purple-500'
+                    : 'bg-white text-purple-600 border-purple-400 hover:bg-purple-50'
+                }`}
+              >
+                <Sparkles className="h-5 w-5 mr-2" />
+                Menu
+              </button>
+            </div>
+          </div>
 
-          <button
-            onClick={() => setActiveView('storytel-menu')}
-            className={`flex items-center px-4 py-2 rounded-lg border-2 transition-colors ${
-              activeView === 'storytel-menu'
-                ? 'bg-orange-500 text-white border-orange-500'
-                : 'bg-white text-orange-500 border-orange-500 hover:bg-orange-50'
-            }`}
-          >
-            <Sparkles className="h-5 w-5 mr-2" />
-            Storytel Menu
-          </button>
-
-          <button
-            onClick={() => setActiveView('snack-labels')}
-            className={`flex items-center px-4 py-2 rounded-lg border-2 transition-colors ${
-              activeView === 'snack-labels'
-                ? 'bg-amber-500 text-white border-amber-500'
-                : 'bg-white text-amber-600 border-amber-500 hover:bg-amber-50'
-            }`}
-          >
-            <Cookie className="h-5 w-5 mr-2" />
-            Snack Labels
-          </button>
-
-          <button
-            onClick={() => setActiveView('snack-menu')}
-            className={`flex items-center px-4 py-2 rounded-lg border-2 transition-colors ${
-              activeView === 'snack-menu'
-                ? 'bg-amber-500 text-white border-amber-500'
-                : 'bg-white text-amber-600 border-amber-500 hover:bg-amber-50'
-            }`}
-          >
-            <Cookie className="h-5 w-5 mr-2" />
-            Snack Menu
-          </button>
-
-          <button
-            onClick={() => setActiveView('list')}
-            className={`flex items-center px-4 py-2 rounded-lg border-2 transition-colors ${
-              activeView === 'list'
-                ? 'bg-orange-500 text-white border-orange-500'
-                : 'bg-white text-orange-500 border-orange-500 hover:bg-orange-50'
-            }`}
-          >
-            <List className="h-5 w-5 mr-2" />
-            All Products
-          </button>
+          {/* Snacks Category */}
+          <div className="flex flex-col items-center">
+            <span className="text-xs font-semibold text-amber-600 mb-2 uppercase tracking-wide">Snacks</span>
+            <div className="flex gap-2">
+              <button
+                onClick={() => setActiveView('snack-labels')}
+                className={`flex items-center px-4 py-2 rounded-lg border-2 transition-colors ${
+                  activeView === 'snack-labels'
+                    ? 'bg-amber-500 text-white border-amber-500'
+                    : 'bg-white text-amber-600 border-amber-400 hover:bg-amber-50'
+                }`}
+              >
+                <Cookie className="h-5 w-5 mr-2" />
+                Labels
+              </button>
+              <button
+                onClick={() => setActiveView('snack-menu')}
+                className={`flex items-center px-4 py-2 rounded-lg border-2 transition-colors ${
+                  activeView === 'snack-menu'
+                    ? 'bg-amber-500 text-white border-amber-500'
+                    : 'bg-white text-amber-600 border-amber-400 hover:bg-amber-50'
+                }`}
+              >
+                <Cookie className="h-5 w-5 mr-2" />
+                Menu
+              </button>
+            </div>
+          </div>
         </div>
 
         <div className="px-4 py-6 sm:px-0">
