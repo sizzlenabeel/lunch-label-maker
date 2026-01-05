@@ -325,7 +325,7 @@ export function SnackMenuPDF({ weekNumber, veganOnly, fontSize }: SnackMenuProps
       <Document>
         <Page size="A4" style={styles.page}>
           <View style={styles.header}>
-            <Text style={getStyle('companyName')}>Sizzle x Wester & Wester</Text>
+            <Text style={getStyle('companyName')}>Sizzle</Text>
             <Text style={getStyle('weekInfo')}>Week {weekNumber}</Text>
             <Text style={getStyle('title')}>
               {veganOnly ? 'Vegan Snacks' : 'Snack Menu'}
