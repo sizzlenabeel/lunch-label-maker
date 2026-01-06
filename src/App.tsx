@@ -9,12 +9,13 @@ import { StorytelMenuView } from './components/StorytelMenuView';
 import { StandardMenuView } from './components/StandardMenuView';
 import { SnackLabelsView } from './components/SnackLabelsView';
 import { SnackMenuView } from './components/SnackMenuView';
+import { StorytelSnackMenuView } from './components/StorytelSnackMenuView';
 import type { FoodLabel } from './types';
 import { FileText, List, Sparkles, Cookie } from 'lucide-react';
 
 function App() {
   const [labelData, setLabelData] = useState<FoodLabel | null>(null);
-  const [activeView, setActiveView] = useState<'form' | 'list' | 'storytel-labels' | 'storytel-menu' | 'standard-menu' | 'snack-labels' | 'snack-menu'>('form');
+  const [activeView, setActiveView] = useState<'form' | 'list' | 'storytel-labels' | 'storytel-menu' | 'storytel-snack-menu' | 'standard-menu' | 'snack-labels' | 'snack-menu'>('form');
   const [previewFontSize, setPreviewFontSize] = useState<'normal' | 'small' | 'smaller'>('normal');
   const [activeLabelType, setActiveLabelType] = useState<'standard' | 'storytel'>('standard');
 
@@ -108,6 +109,17 @@ function App() {
               >
                 <Sparkles className="h-5 w-5 mr-2" />
                 Menu
+              </button>
+              <button
+                onClick={() => setActiveView('storytel-snack-menu')}
+                className={`flex items-center px-4 py-2 rounded-lg border-2 transition-colors ${
+                  activeView === 'storytel-snack-menu'
+                    ? 'bg-purple-500 text-white border-purple-500'
+                    : 'bg-white text-purple-600 border-purple-400 hover:bg-purple-50'
+                }`}
+              >
+                <Cookie className="h-5 w-5 mr-2" />
+                Snack Menu
               </button>
             </div>
           </div>
@@ -208,6 +220,8 @@ function App() {
             <StorytelLabelsView />
           ) : activeView === 'storytel-menu' ? (
             <StorytelMenuView />
+          ) : activeView === 'storytel-snack-menu' ? (
+            <StorytelSnackMenuView />
           ) : activeView === 'standard-menu' ? (
             <StandardMenuView />
           ) : activeView === 'snack-labels' ? (
