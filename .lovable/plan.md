@@ -1,35 +1,28 @@
 
 
-## Add Click-to-View Labels in All Products List
+## Fix Snack Menu Filtering Logic
 
-### What Changes
-When you click on any product in the "All Products" list, it will show the label preview (just like clicking a product in Storytel Labels), with the correct label type based on the product.
+### The Problem
+The current filtering is inverted. The Storytel Snack Menu shows snacks that are NOT marked for Storytel, and the Sizzle Snack Menu shows ALL snacks with no filtering at all.
 
-### How It Works
-- Click a product to see its label and download it
-- Click "Back to Product List" to return to the list
-- The correct label type is automatically chosen:
-  - **Storytel-only products** show the Storytel label
-  - **Snack products** show the Snack label
-  - **All other products** show the Standard label
-- A font size selector appears when viewing a label
+### Correct Logic
 
-### Technical Details
+| Snack flags | Sizzle Menu | Storytel Menu |
+|---|---|---|
+| `is_for_storytel = false`, `is_only_for_storytel = false/null` | Yes | No |
+| `is_for_storytel = true` | Yes | Yes |
+| `is_only_for_storytel = true` | No | Yes |
 
-**File modified: `src/components/ProductsList.tsx`**
+### Changes
 
-1. **Change query to fetch all fields** (`select('*')` instead of specific columns) so we have all the data needed for label generation
-2. **Add state**: `selectedProduct` (clicked product) and `fontSize` (label size selector)
-3. **Add `convertToLabelData` function** (copied from `StorytelLabelsView`) to convert a database product into a `FoodLabel` object
-4. **Make product cards clickable** with `cursor-pointer` and `onClick={() => setSelectedProduct(product)}`
-5. **Add "Click to generate labels" hint text** on each product card
-6. **Add label view section** (when a product is selected):
-   - Show product name, "Back to Product List" button, and font size selector
-   - Conditionally render the correct label PDF component:
-     - `is_only_for_storytel === true` --> `StorytelLabelPDF`
-     - `is_snack === true` --> `SnackLabelPDF`
-     - Otherwise --> `LabelPDF`
-7. **Import** `LabelPDF`, `StorytelLabelPDF`, `SnackLabelPDF`, and `FoodLabel` type
+**1. `src/components/SnackMenuPDF.tsx` (Sizzle Snack Menu)**
+- Add filtering to exclude snacks where `is_only_for_storytel = true`
+- These are Storytel-exclusive snacks and should not appear in Sizzle
+- Fetch `is_only_for_storytel` column and filter: show snack only if `is_only_for_storytel !== true`
 
-No other files are changed. The existing menu functionality, filters, and all other views remain untouched.
+**2. `src/components/StorytelSnackMenuPDF.tsx` (Storytel Snack Menu)**
+- Fix the inverted filter: change from `is_for_storytel !== true` to `is_for_storytel === true || is_only_for_storytel === true`
+- Also fetch `is_only_for_storytel` column
+- Update the comments to reflect the corrected logic
 
+No other files change. Menu views, labels, and forms are unaffected.
