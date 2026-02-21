@@ -234,9 +234,7 @@ export function StorytelSnackMenuPDF({ weekNumber, veganOnly, fontSize }: Storyt
       try {
         setLoading(true);
         
-        // wrong logic but being implemented to not add another column in the database january 6 2026
-        // Filter: is_snack = true AND (is_for_storytel = false OR is_for_storytel IS NULL)
-        // This shows snacks that are NOT marked for Storytel
+        // Storytel snack menu: show snacks where is_for_storytel = true OR is_only_for_storytel = true
         const { data, error } = await supabase
           .from('products')
           .select(`
@@ -246,6 +244,7 @@ export function StorytelSnackMenuPDF({ weekNumber, veganOnly, fontSize }: Storyt
             price,
             is_vegan,
             is_for_storytel,
+            is_only_for_storytel,
             translated_name,
             translated_description,
             translated_allergens
@@ -255,10 +254,9 @@ export function StorytelSnackMenuPDF({ weekNumber, veganOnly, fontSize }: Storyt
 
         if (error) throw error;
 
-        // wrong logic but being implemented to not add another column in the database january 6 2026
-        // Filter out items where is_for_storytel is true
+        // Show snacks marked for Storytel or exclusively for Storytel
         let filteredData = (data || []).filter(product => 
-          product.is_for_storytel !== true
+          product.is_for_storytel === true || product.is_only_for_storytel === true
         );
 
         if (veganOnly) {
