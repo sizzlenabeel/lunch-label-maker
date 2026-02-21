@@ -14,6 +14,128 @@ export type Database = {
   }
   public: {
     Tables: {
+      allocations: {
+        Row: {
+          created_at: string
+          delivery_date: string
+          id: string
+          location_id: string
+          product_id: string
+          quantity_allocated: number
+          quantity_returned: number
+          week_number: number
+          year: number
+        }
+        Insert: {
+          created_at?: string
+          delivery_date: string
+          id?: string
+          location_id: string
+          product_id: string
+          quantity_allocated?: number
+          quantity_returned?: number
+          week_number: number
+          year: number
+        }
+        Update: {
+          created_at?: string
+          delivery_date?: string
+          id?: string
+          location_id?: string
+          product_id?: string
+          quantity_allocated?: number
+          quantity_returned?: number
+          week_number?: number
+          year?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "allocations_location_id_fkey"
+            columns: ["location_id"]
+            isOneToOne: false
+            referencedRelation: "locations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "allocations_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      locations: {
+        Row: {
+          address: string
+          created_at: string
+          delivery_days: string[]
+          icon: string | null
+          id: string
+          is_active: boolean
+          name: string
+          vegan_target: number
+        }
+        Insert: {
+          address: string
+          created_at?: string
+          delivery_days?: string[]
+          icon?: string | null
+          id?: string
+          is_active?: boolean
+          name: string
+          vegan_target?: number
+        }
+        Update: {
+          address?: string
+          created_at?: string
+          delivery_days?: string[]
+          icon?: string | null
+          id?: string
+          is_active?: boolean
+          name?: string
+          vegan_target?: number
+        }
+        Relationships: []
+      }
+      production: {
+        Row: {
+          created_at: string
+          id: string
+          product_id: string
+          production_date: string
+          quantity_produced: number
+          week_number: number
+          year: number
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          product_id: string
+          production_date: string
+          quantity_produced?: number
+          week_number: number
+          year: number
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          product_id?: string
+          production_date?: string
+          quantity_produced?: number
+          week_number?: number
+          year?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "production_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       products: {
         Row: {
           allergens: string | null
@@ -88,6 +210,44 @@ export type Database = {
           week_number?: number | null
         }
         Relationships: []
+      }
+      requirements: {
+        Row: {
+          created_at: string
+          delivery_date: string
+          id: string
+          location_id: string
+          total_required: number
+          week_number: number
+          year: number
+        }
+        Insert: {
+          created_at?: string
+          delivery_date: string
+          id?: string
+          location_id: string
+          total_required?: number
+          week_number: number
+          year: number
+        }
+        Update: {
+          created_at?: string
+          delivery_date?: string
+          id?: string
+          location_id?: string
+          total_required?: number
+          week_number?: number
+          year?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "requirements_location_id_fkey"
+            columns: ["location_id"]
+            isOneToOne: false
+            referencedRelation: "locations"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {
