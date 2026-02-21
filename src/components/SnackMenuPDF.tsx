@@ -242,6 +242,7 @@ export function SnackMenuPDF({ weekNumber, veganOnly, fontSize }: SnackMenuProps
             allergens,
             price,
             is_vegan,
+            is_only_for_storytel,
             translated_name,
             translated_description,
             translated_allergens
@@ -257,7 +258,10 @@ export function SnackMenuPDF({ weekNumber, veganOnly, fontSize }: SnackMenuProps
 
         if (error) throw error;
 
-        const items: SnackMenuItem[] = (data || []).map((product) => ({
+        // Exclude snacks that are only for Storytel
+        const filteredData = (data || []).filter(product => product.is_only_for_storytel !== true);
+
+        const items: SnackMenuItem[] = filteredData.map((product) => ({
           original: {
             name: product.name,
             description: product.description,
