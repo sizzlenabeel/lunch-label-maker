@@ -1,28 +1,19 @@
 
 
-## Fix Snack Menu Filtering Logic
+## Allow Snacks to Have Storytel Options
 
 ### The Problem
-The current filtering is inverted. The Storytel Snack Menu shows snacks that are NOT marked for Storytel, and the Sizzle Snack Menu shows ALL snacks with no filtering at all.
-
-### Correct Logic
-
-| Snack flags | Sizzle Menu | Storytel Menu |
-|---|---|---|
-| `is_for_storytel = false`, `is_only_for_storytel = false/null` | Yes | No |
-| `is_for_storytel = true` | Yes | Yes |
-| `is_only_for_storytel = true` | No | Yes |
+When "This is a snack" is checked, both Storytel checkboxes are disabled and cleared. This prevents marking snacks for Storytel, which is needed for the corrected filtering logic we just implemented.
 
 ### Changes
 
-**1. `src/components/SnackMenuPDF.tsx` (Sizzle Snack Menu)**
-- Add filtering to exclude snacks where `is_only_for_storytel = true`
-- These are Storytel-exclusive snacks and should not appear in Sizzle
-- Fetch `is_only_for_storytel` column and filter: show snack only if `is_only_for_storytel !== true`
+**1. `src/components/LabelForm/FormFields.tsx`**
+- Remove `formData.isSnack` from the `disabled` condition on both Storytel checkboxes (lines 83-84 and 95-96)
+- Remove `formData.isSnack` from the opacity condition on the Storytel section wrapper (line 78)
+- Keep the delivery day selector visible when a snack is marked for Storytel
 
-**2. `src/components/StorytelSnackMenuPDF.tsx` (Storytel Snack Menu)**
-- Fix the inverted filter: change from `is_for_storytel !== true` to `is_for_storytel === true || is_only_for_storytel === true`
-- Also fetch `is_only_for_storytel` column
-- Update the comments to reflect the corrected logic
+**2. `src/components/LabelForm/index.tsx`**
+- Remove the special handling in `handleCheckboxChange` that clears `isForStorytel` and `isOnlyForStorytel` when `isSnack` is checked (lines 113-114)
+- Simply set `isSnack` like any other checkbox
 
-No other files change. Menu views, labels, and forms are unaffected.
+No other files change.
