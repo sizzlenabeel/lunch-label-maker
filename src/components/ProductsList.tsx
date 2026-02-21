@@ -4,19 +4,13 @@ import { supabase } from '@/integrations/supabase/client';
 import { AlertTriangle, FileText, Leaf } from 'lucide-react';
 import { NewWeeklyMenuPDF } from './NewWeeklyMenuPDF';
 import { StorytelMenuPDF } from './StorytelMenuPDF';
-
-interface Product {
-  name: string;
-  description: string;
-  allergens: string;
-  is_vegan: boolean;
-  is_for_storytel: boolean;
-  is_only_for_storytel: boolean;
-  delivery_day: string | null;
-}
+import { LabelPDF } from './LabelPDF';
+import { StorytelLabelPDF } from './StorytelLabelPDF';
+import { SnackLabelPDF } from './SnackLabelPDF';
+import type { FoodLabel } from '../types';
 
 export function ProductsList() {
-  const [products, setProducts] = useState<Product[]>([]);
+  const [products, setProducts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const currentWeek = getWeek(new Date(), { weekStartsOn: 1 });
@@ -25,15 +19,16 @@ export function ProductsList() {
   const [showMenu, setShowMenu] = useState(false);
   const [menuFontSize, setMenuFontSize] = useState<'normal' | 'small' | 'smaller'>('normal');
   const [menuType, setMenuType] = useState<'standard' | 'storytel'>('standard');
+  const [selectedProduct, setSelectedProduct] = useState<any | null>(null);
+  const [fontSize, setFontSize] = useState<'normal' | 'small' | 'smaller'>('normal');
 
   useEffect(() => {
     async function fetchProducts() {
       try {
         setLoading(true);
-        // Fetch ALL products for the selected week - no menu type filtering for the list
         let query = supabase
           .from('products')
-          .select('name, description, allergens, is_vegan, is_for_storytel, is_only_for_storytel, delivery_day')
+          .select('*')
           .eq('week_number', selectedWeek);
 
         if (showVeganOnly) {
@@ -55,6 +50,36 @@ export function ProductsList() {
 
     fetchProducts();
   }, [selectedWeek, showVeganOnly]);
+
+  const convertToLabelData = (product: any): FoodLabel => {
+    return {
+      name: product.name,
+      dueDate: product.due_date,
+      price: product.price?.toString() || '',
+      ingredients: product.ingredients,
+      allergens: product.allergens,
+      consumptionGuidelines: product.consumption_guidelines,
+      description: product.description,
+      fontSize: fontSize,
+      weekNumber: product.week_number.toString(),
+      isVegan: product.is_vegan,
+      isForStorytel: product.is_for_storytel,
+      isOnlyForStorytel: product.is_only_for_storytel,
+      deliveryDay: product.delivery_day || '',
+      isSnack: product.is_snack || false
+    };
+  };
+
+  const renderLabelForProduct = (product: any) => {
+    const labelData = convertToLabelData(product);
+    if (product.is_only_for_storytel) {
+      return <StorytelLabelPDF data={labelData} />;
+    }
+    if (product.is_snack) {
+      return <SnackLabelPDF data={labelData} />;
+    }
+    return <LabelPDF data={labelData} />;
+  };
 
   return (
     <div className="bg-white shadow rounded-lg p-6">
@@ -93,15 +118,17 @@ export function ProductsList() {
             </label>
           </div>
           
-          <button
-            onClick={() => setShowMenu(!showMenu)}
-            className="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-          >
-            <FileText className="w-4 h-4 mr-2" />
-            {showMenu ? 'Hide Menu' : 'Show Menu'}
-          </button>
+          {!selectedProduct && (
+            <button
+              onClick={() => setShowMenu(!showMenu)}
+              className="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+            >
+              <FileText className="w-4 h-4 mr-2" />
+              {showMenu ? 'Hide Menu' : 'Show Menu'}
+            </button>
+          )}
           
-          {showMenu && (
+          {showMenu && !selectedProduct && (
             <>
               <div className="flex gap-2">
                 <button
@@ -136,10 +163,22 @@ export function ProductsList() {
               </select>
             </>
           )}
+
+          {selectedProduct && (
+            <select
+              value={fontSize}
+              onChange={(e) => setFontSize(e.target.value as 'normal' | 'small' | 'smaller')}
+              className="rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-sm"
+            >
+              <option value="normal">Normal Size</option>
+              <option value="small">Small Size</option>
+              <option value="smaller">Smaller Size</option>
+            </select>
+          )}
         </div>
       </div>
 
-      {showMenu && (
+      {showMenu && !selectedProduct && (
         <div className="mb-6">
           {menuType === 'standard' ? (
             <NewWeeklyMenuPDF 
@@ -156,7 +195,22 @@ export function ProductsList() {
         </div>
       )}
 
-      {loading ? (
+      {selectedProduct ? (
+        <div>
+          <div className="flex justify-between items-center mb-4">
+            <h3 className="text-lg font-semibold text-gray-900">
+              Labels for: {selectedProduct.name}
+            </h3>
+            <button
+              onClick={() => setSelectedProduct(null)}
+              className="text-sm text-indigo-600 hover:text-indigo-700"
+            >
+              Back to Product List
+            </button>
+          </div>
+          {renderLabelForProduct(selectedProduct)}
+        </div>
+      ) : loading ? (
         <div className="text-center py-4">
           <div className="animate-pulse text-gray-500">Loading products...</div>
         </div>
@@ -174,7 +228,8 @@ export function ProductsList() {
           {products.map((product, index) => (
             <div
               key={index}
-              className="border rounded-lg p-4 hover:bg-gray-50 transition-colors"
+              className="border rounded-lg p-4 hover:bg-gray-50 transition-colors cursor-pointer"
+              onClick={() => setSelectedProduct(product)}
             >
               <div className="flex justify-between items-start">
                 <h3 className="font-medium text-gray-900">{product.name}</h3>
@@ -208,6 +263,9 @@ export function ProductsList() {
                   <span className="font-medium">Allergens:</span> {product.allergens}
                 </p>
               )}
+              <p className="text-xs text-indigo-500 mt-2 italic">
+                Click to generate labels
+              </p>
             </div>
           ))}
         </div>
