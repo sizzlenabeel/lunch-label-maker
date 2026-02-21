@@ -128,12 +128,8 @@ export function LabelForm({ onSubmit }: LabelFormProps) {
   const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, checked } = e.target;
     
-    // Handle snack checkbox - disable storytel options when snack is checked
-    if (name === 'isSnack' && checked) {
-      setFormData(prev => ({ ...prev, isSnack: true, isForStorytel: false, isOnlyForStorytel: false }));
-    }
     // Make Storytel checkboxes mutually exclusive
-    else if (name === 'isOnlyForStorytel' && checked) {
+    if (name === 'isOnlyForStorytel' && checked) {
       setFormData(prev => ({ ...prev, isOnlyForStorytel: true, isForStorytel: false }));
     } else if (name === 'isForStorytel' && checked) {
       setFormData(prev => ({ ...prev, isForStorytel: true, isOnlyForStorytel: false }));

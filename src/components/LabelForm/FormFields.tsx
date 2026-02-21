@@ -86,7 +86,7 @@ export function FormFields({
       </div>
 
       {/* Storytel Options - disabled when snack is checked */}
-      <div className={`bg-purple-50 p-4 rounded-lg border border-purple-200 space-y-3 ${formData.isSnack ? 'opacity-50' : ''}`}>
+      <div className="bg-purple-50 p-4 rounded-lg border border-purple-200 space-y-3">
         <h3 className="text-sm font-semibold text-purple-900">Storytel Options</h3>
         
         <div className={`flex items-center ${formData.isOnlyForStorytel ? 'opacity-50' : ''}`}>
@@ -96,7 +96,7 @@ export function FormFields({
             name="isForStorytel"
             checked={formData.isForStorytel}
             onChange={handleCheckboxChange}
-            disabled={formData.isOnlyForStorytel || formData.isSnack}
+            disabled={formData.isOnlyForStorytel}
             className="h-5 w-5 text-purple-600 focus:ring-purple-500 border border-purple-300 rounded disabled:cursor-not-allowed"
           />
           <label htmlFor="isForStorytel" className="ml-2 block text-sm text-purple-700">
@@ -111,7 +111,7 @@ export function FormFields({
             name="isOnlyForStorytel"
             checked={formData.isOnlyForStorytel}
             onChange={handleCheckboxChange}
-            disabled={formData.isForStorytel || formData.isSnack}
+            disabled={formData.isForStorytel}
             className="h-5 w-5 text-purple-600 focus:ring-purple-500 border border-purple-300 rounded disabled:cursor-not-allowed"
           />
           <label htmlFor="isOnlyForStorytel" className="ml-2 block text-sm text-purple-700">
