@@ -1,19 +1,15 @@
+## Add Scroll Position Restore to All Products
 
+### What Changes
 
-## Allow Snacks to Have Storytel Options
+1. **Scroll position restore** -- when you click "Back to Product List" after viewing a label, the page scrolls back to where you were in the list instead of jumping to the top.
 
-### The Problem
-When "This is a snack" is checked, both Storytel checkboxes are disabled and cleared. This prevents marking snacks for Storytel, which is needed for the corrected filtering logic we just implemented.
+### Technical Details
 
-### Changes
+**File: `src/components/ProductsList.tsx**`
 
-**1. `src/components/LabelForm/FormFields.tsx`**
-- Remove `formData.isSnack` from the `disabled` condition on both Storytel checkboxes (lines 83-84 and 95-96)
-- Remove `formData.isSnack` from the opacity condition on the Storytel section wrapper (line 78)
-- Keep the delivery day selector visible when a snack is marked for Storytel
+1. **Save scroll position before viewing a label** -- add a `useRef` for `scrollPositionRef`. When a product is clicked, capture `window.scrollY` (or the container's scroll position) into the ref before setting `selectedProduct`.
+2. **Restore scroll position on back** -- when "Back to Product List" is clicked, set `selectedProduct` to null, then use `requestAnimationFrame` (to wait for the list to render) followed by `window.scrollTo(0, savedPosition)` to restore the scroll position.
+3. **Add snack badge** to product cards -- show an amber "Snack" badge (similar to the existing Vegan/Storytel badges) when `product.is_snack` is true.
 
-**2. `src/components/LabelForm/index.tsx`**
-- Remove the special handling in `handleCheckboxChange` that clears `isForStorytel` and `isOnlyForStorytel` when `isSnack` is checked (lines 113-114)
-- Simply set `isSnack` like any other checkbox
-
-No other files change.
+No other files are changed.
