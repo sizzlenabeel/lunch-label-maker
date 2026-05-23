@@ -1,15 +1,9 @@
-## Add Scroll Position Restore to All Products
+## Reserve stamp space on snack labels
 
-### What Changes
+### Change
+In `src/components/SnackLabelPDF.tsx`, inside `LabelContent`, replace the date text with the heading only and reserve more horizontal space for a physical stamp.
 
-1. **Scroll position restore** -- when you click "Back to Product List" after viewing a label, the page scrolls back to where you were in the list instead of jumping to the top.
+- Change `<Text style={[getTextStyle(), { minWidth: 80 }]}>Best före: {formattedDate}</Text>` to render just `Best före:` with `minWidth: 120` (≈50% more room than the current ~80pt date area) so the stamp fits.
+- Leave everything else untouched: layout, font sizes, other fields, standard/Storytel labels, menus, and form behavior.
 
-### Technical Details
-
-**File: `src/components/ProductsList.tsx**`
-
-1. **Save scroll position before viewing a label** -- add a `useRef` for `scrollPositionRef`. When a product is clicked, capture `window.scrollY` (or the container's scroll position) into the ref before setting `selectedProduct`.
-2. **Restore scroll position on back** -- when "Back to Product List" is clicked, set `selectedProduct` to null, then use `requestAnimationFrame` (to wait for the list to render) followed by `window.scrollTo(0, savedPosition)` to restore the scroll position.
-3. **Add snack badge** to product cards -- show an amber "Snack" badge (similar to the existing Vegan/Storytel badges) when `product.is_snack` is true.
-
-No other files are changed.
+No other files change.

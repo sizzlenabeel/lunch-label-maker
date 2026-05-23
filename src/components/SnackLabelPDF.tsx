@@ -163,7 +163,7 @@ export function SnackLabelPDF({ data }: SnackLabelPDFProps) {
       <View style={styles.label}>
         <View style={styles.header}>
           <Text style={styles.name} wrap={true}>{data.name}</Text>
-          <Text style={[getTextStyle(), { minWidth: 80 }]}>Best före: {formattedDate}</Text>
+          <Text style={[getTextStyle(), { minWidth: 120 }]}>Best före:</Text>
         </View>
         <Text style={getTextStyle()}>Ingredienser: {data.ingredients}</Text>
         <View style={styles.allergensRow}>
