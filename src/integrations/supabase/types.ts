@@ -70,6 +70,7 @@ export type Database = {
           address: string
           created_at: string
           delivery_days: string[]
+          dynamo_id: string | null
           icon: string | null
           id: string
           is_active: boolean
@@ -80,6 +81,7 @@ export type Database = {
           address: string
           created_at?: string
           delivery_days?: string[]
+          dynamo_id?: string | null
           icon?: string | null
           id?: string
           is_active?: boolean
@@ -90,6 +92,7 @@ export type Database = {
           address?: string
           created_at?: string
           delivery_days?: string[]
+          dynamo_id?: string | null
           icon?: string | null
           id?: string
           is_active?: boolean
@@ -152,7 +155,9 @@ export type Database = {
           is_snack: boolean | null
           is_vegan: boolean | null
           name: string | null
+          numeric_id: number
           price: number | null
+          sizzle_deliveryday: string | null
           translated_allergens: string | null
           translated_consumption_guidelines: string | null
           translated_description: string | null
@@ -176,7 +181,9 @@ export type Database = {
           is_snack?: boolean | null
           is_vegan?: boolean | null
           name?: string | null
+          numeric_id?: number
           price?: number | null
+          sizzle_deliveryday?: string | null
           translated_allergens?: string | null
           translated_consumption_guidelines?: string | null
           translated_description?: string | null
@@ -200,7 +207,9 @@ export type Database = {
           is_snack?: boolean | null
           is_vegan?: boolean | null
           name?: string | null
+          numeric_id?: number
           price?: number | null
+          sizzle_deliveryday?: string | null
           translated_allergens?: string | null
           translated_consumption_guidelines?: string | null
           translated_description?: string | null
@@ -216,6 +225,7 @@ export type Database = {
           created_at: string
           delivery_date: string
           id: string
+          is_snack: boolean
           location_id: string
           total_required: number
           week_number: number
@@ -225,6 +235,7 @@ export type Database = {
           created_at?: string
           delivery_date: string
           id?: string
+          is_snack?: boolean
           location_id: string
           total_required?: number
           week_number: number
@@ -234,6 +245,7 @@ export type Database = {
           created_at?: string
           delivery_date?: string
           id?: string
+          is_snack?: boolean
           location_id?: string
           total_required?: number
           week_number?: number
