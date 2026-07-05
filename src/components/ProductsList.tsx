@@ -1,12 +1,13 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { getWeek } from 'date-fns';
 import { supabase } from '@/integrations/supabase/client';
-import { AlertTriangle, Cookie, FileText, Leaf } from 'lucide-react';
+import { AlertTriangle, Cookie, Download, FileText, Leaf, Loader2, Package } from 'lucide-react';
 import { NewWeeklyMenuPDF } from './NewWeeklyMenuPDF';
 import { StorytelMenuPDF } from './StorytelMenuPDF';
 import { LabelPDF } from './LabelPDF';
 import { StorytelLabelPDF } from './StorytelLabelPDF';
 import { SnackLabelPDF } from './SnackLabelPDF';
+import { downloadLabelsZip, downloadLabelsCombinedPdf } from '@/lib/bulkLabels';
 import type { FoodLabel } from '../types';
 
 export function ProductsList() {
