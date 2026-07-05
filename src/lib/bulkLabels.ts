@@ -208,7 +208,7 @@ export async function downloadLabelsZip(products: any[], zipName: string) {
   const seen = new Map<string, number>();
   for (const product of products) {
     const doc = singleDocument(product);
-    // @ts-expect-error react-pdf typings
+    
     const blob: Blob = await pdf(doc).toBlob();
     let name = sanitizeFilename(product.name);
     const count = seen.get(name) || 0;
@@ -222,7 +222,7 @@ export async function downloadLabelsZip(products: any[], zipName: string) {
 
 export async function downloadLabelsCombinedPdf(products: any[], fileName: string) {
   const doc = combinedDocument(products);
-  // @ts-expect-error react-pdf typings
+  
   const blob: Blob = await pdf(doc).toBlob();
   triggerDownload(blob, fileName);
 }
