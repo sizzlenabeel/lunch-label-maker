@@ -1,12 +1,13 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { getWeek } from 'date-fns';
 import { supabase } from '@/integrations/supabase/client';
-import { AlertTriangle, Cookie, FileText, Leaf } from 'lucide-react';
+import { AlertTriangle, Cookie, Download, FileText, Leaf, Loader2, Package } from 'lucide-react';
 import { NewWeeklyMenuPDF } from './NewWeeklyMenuPDF';
 import { StorytelMenuPDF } from './StorytelMenuPDF';
 import { LabelPDF } from './LabelPDF';
 import { StorytelLabelPDF } from './StorytelLabelPDF';
 import { SnackLabelPDF } from './SnackLabelPDF';
+import { downloadLabelsZip, downloadLabelsCombinedPdf } from '@/lib/bulkLabels';
 import type { FoodLabel } from '../types';
 
 export function ProductsList() {
@@ -22,6 +23,25 @@ export function ProductsList() {
   const [selectedProduct, setSelectedProduct] = useState<any | null>(null);
   const [fontSize, setFontSize] = useState<'normal' | 'small' | 'smaller'>('normal');
   const scrollPositionRef = useRef(0);
+  type BulkJob = 'food-zip' | 'food-pdf' | 'snack-zip' | 'snack-pdf';
+  const [bulkBusy, setBulkBusy] = useState<BulkJob | null>(null);
+  const [bulkError, setBulkError] = useState<string | null>(null);
+
+  const foodProducts = useMemo(() => products.filter((p) => !p.is_snack), [products]);
+  const snackProducts = useMemo(() => products.filter((p) => p.is_snack), [products]);
+
+  const runBulk = async (job: BulkJob, fn: () => Promise<void>) => {
+    try {
+      setBulkError(null);
+      setBulkBusy(job);
+      await fn();
+    } catch (err) {
+      console.error('Bulk download failed:', err);
+      setBulkError(err instanceof Error ? err.message : 'Bulk download failed');
+    } finally {
+      setBulkBusy(null);
+    }
+  };
 
   const handleProductClick = (product: any) => {
     scrollPositionRef.current = window.scrollY;
@@ -205,6 +225,115 @@ export function ProductsList() {
               fontSize={menuFontSize}
             />
           )}
+        </div>
+      )}
+
+      {!selectedProduct && (
+        <div className="mb-6 border border-gray-200 rounded-lg p-4 bg-gray-50">
+          <div className="flex items-center justify-between flex-wrap gap-3 mb-3">
+            <h3 className="text-sm font-semibold text-gray-700 flex items-center gap-2">
+              <Download className="w-4 h-4" />
+              Bulk download (Week {selectedWeek})
+            </h3>
+            {bulkError && (
+              <span className="text-xs text-red-600 flex items-center gap-1">
+                <AlertTriangle className="w-3 h-3" /> {bulkError}
+              </span>
+            )}
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="border border-orange-200 rounded-md p-3 bg-white">
+              <div className="flex items-center gap-2 mb-2">
+                <Package className="w-4 h-4 text-orange-600" />
+                <span className="text-sm font-medium text-gray-800">
+                  Food labels ({foodProducts.length})
+                </span>
+              </div>
+              <div className="flex flex-wrap gap-2">
+                <button
+                  onClick={() =>
+                    runBulk('food-zip', () =>
+                      downloadLabelsZip(foodProducts, `food-labels-week-${selectedWeek}.zip`),
+                    )
+                  }
+                  disabled={foodProducts.length === 0 || bulkBusy !== null}
+                  className="inline-flex items-center gap-1 px-3 py-1.5 rounded border-2 border-orange-500 text-sm text-orange-600 bg-white hover:bg-orange-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {bulkBusy === 'food-zip' ? (
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                  ) : (
+                    <Download className="w-4 h-4" />
+                  )}
+                  ZIP (per label)
+                </button>
+                <button
+                  onClick={() =>
+                    runBulk('food-pdf', () =>
+                      downloadLabelsCombinedPdf(
+                        foodProducts,
+                        `food-labels-week-${selectedWeek}.pdf`,
+                      ),
+                    )
+                  }
+                  disabled={foodProducts.length === 0 || bulkBusy !== null}
+                  className="inline-flex items-center gap-1 px-3 py-1.5 rounded border-2 border-orange-500 text-sm text-white bg-orange-500 hover:bg-orange-600 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {bulkBusy === 'food-pdf' ? (
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                  ) : (
+                    <FileText className="w-4 h-4" />
+                  )}
+                  Combined PDF
+                </button>
+              </div>
+            </div>
+
+            <div className="border border-amber-200 rounded-md p-3 bg-white">
+              <div className="flex items-center gap-2 mb-2">
+                <Cookie className="w-4 h-4 text-amber-600" />
+                <span className="text-sm font-medium text-gray-800">
+                  Snack labels ({snackProducts.length})
+                </span>
+              </div>
+              <div className="flex flex-wrap gap-2">
+                <button
+                  onClick={() =>
+                    runBulk('snack-zip', () =>
+                      downloadLabelsZip(snackProducts, `snack-labels-week-${selectedWeek}.zip`),
+                    )
+                  }
+                  disabled={snackProducts.length === 0 || bulkBusy !== null}
+                  className="inline-flex items-center gap-1 px-3 py-1.5 rounded border-2 border-amber-500 text-sm text-amber-600 bg-white hover:bg-amber-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {bulkBusy === 'snack-zip' ? (
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                  ) : (
+                    <Download className="w-4 h-4" />
+                  )}
+                  ZIP (per label)
+                </button>
+                <button
+                  onClick={() =>
+                    runBulk('snack-pdf', () =>
+                      downloadLabelsCombinedPdf(
+                        snackProducts,
+                        `snack-labels-week-${selectedWeek}.pdf`,
+                      ),
+                    )
+                  }
+                  disabled={snackProducts.length === 0 || bulkBusy !== null}
+                  className="inline-flex items-center gap-1 px-3 py-1.5 rounded border-2 border-amber-500 text-sm text-white bg-amber-500 hover:bg-amber-600 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {bulkBusy === 'snack-pdf' ? (
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                  ) : (
+                    <FileText className="w-4 h-4" />
+                  )}
+                  Combined PDF
+                </button>
+              </div>
+            </div>
+          </div>
         </div>
       )}
 
