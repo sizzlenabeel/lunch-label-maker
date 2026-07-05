@@ -23,6 +23,25 @@ export function ProductsList() {
   const [selectedProduct, setSelectedProduct] = useState<any | null>(null);
   const [fontSize, setFontSize] = useState<'normal' | 'small' | 'smaller'>('normal');
   const scrollPositionRef = useRef(0);
+  type BulkJob = 'food-zip' | 'food-pdf' | 'snack-zip' | 'snack-pdf';
+  const [bulkBusy, setBulkBusy] = useState<BulkJob | null>(null);
+  const [bulkError, setBulkError] = useState<string | null>(null);
+
+  const foodProducts = useMemo(() => products.filter((p) => !p.is_snack), [products]);
+  const snackProducts = useMemo(() => products.filter((p) => p.is_snack), [products]);
+
+  const runBulk = async (job: BulkJob, fn: () => Promise<void>) => {
+    try {
+      setBulkError(null);
+      setBulkBusy(job);
+      await fn();
+    } catch (err) {
+      console.error('Bulk download failed:', err);
+      setBulkError(err instanceof Error ? err.message : 'Bulk download failed');
+    } finally {
+      setBulkBusy(null);
+    }
+  };
 
   const handleProductClick = (product: any) => {
     scrollPositionRef.current = window.scrollY;
