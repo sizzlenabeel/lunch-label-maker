@@ -1,73 +1,44 @@
-# Welcome to your Lovable project
+# Sizzle Label Project
 
-## Project info
+A Vite, React, TypeScript, shadcn/ui, and Tailwind CSS application for creating food labels and menus.
 
-**URL**: https://lovable.dev/projects/c2700b5e-8ebf-408c-bc36-6bdd0370a6f4
+## Sites
 
-## How can I edit this code?
+- Production: https://dbgpdp09px7we.cloudfront.net
+- Development: https://dyanji58pub4g.cloudfront.net
 
-There are several ways of editing your application.
+## Local development
 
-**Use Lovable**
-
-Simply visit the [Lovable Project](https://lovable.dev/projects/c2700b5e-8ebf-408c-bc36-6bdd0370a6f4) and start prompting.
-
-Changes made via Lovable will be committed automatically to this repo.
-
-**Use your preferred IDE**
-
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
-
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
+Node.js 20 or newer is required.
 
 ```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
+npm ci
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+Create a production build with:
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+```sh
+npm run build
+```
 
-**Use GitHub Codespaces**
+## Automatic AWS deployment
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+GitHub Actions builds and deploys the app to private S3 buckets served through CloudFront. Authentication uses GitHub OIDC, so GitHub does not store permanent AWS access keys.
 
-## What technologies are used for this project?
+- Pushes to `main` deploy production using `.github/workflows/deploy-aws.yml`.
+- Pushes to `development` deploy development using `.github/workflows/deploy-aws-development.yml`.
 
-This project is built with:
+Configure these GitHub Actions repository variables under **Settings → Secrets and variables → Actions → Variables**:
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+| Variable | Purpose |
+| --- | --- |
+| `AWS_REGION` | AWS region, currently `eu-north-1` |
+| `AWS_ROLE_ARN` | Production deployment-role ARN |
+| `AWS_S3_BUCKET` | Production bucket name |
+| `AWS_CLOUDFRONT_DISTRIBUTION_ID` | Production CloudFront distribution ID |
+| `AWS_DEV_ROLE_ARN` | Development deployment-role ARN |
+| `AWS_DEV_S3_BUCKET` | Development bucket name |
+| `AWS_DEV_CLOUDFRONT_DISTRIBUTION_ID` | Development CloudFront distribution ID |
 
-## How can I deploy this project?
-
-Simply open [Lovable](https://lovable.dev/projects/c2700b5e-8ebf-408c-bc36-6bdd0370a6f4) and click on Share -> Publish.
-
-## Can I connect a custom domain to my Lovable project?
-
-Yes, you can!
-
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+The hosting infrastructure is defined in `infrastructure/aws-static-site.yml`. Each environment uses its own CloudFormation stack, bucket, CloudFront distribution, and branch-restricted IAM role.
