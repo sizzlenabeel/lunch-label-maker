@@ -1,5 +1,5 @@
 import { supabase } from '@/integrations/supabase/client';
-import type { FoodLabel } from '../types';
+import type { FoodLabel, ProductType } from '../types';
 
 interface ProductData {
   name: string;
@@ -16,6 +16,7 @@ interface ProductData {
   is_only_for_storytel: boolean;
   delivery_day: string;
   is_snack: boolean;
+  types: ProductType[];
   translated_name?: string | null;
   translated_ingredients?: string | null;
   translated_allergens?: string | null;
@@ -50,6 +51,7 @@ export async function saveProduct(
     is_only_for_storytel: formData.isOnlyForStorytel,
     delivery_day: formData.deliveryDay,
     is_snack: formData.isSnack,
+    types: formData.types.length > 0 ? formData.types : ['FOOD'],
     translated_name: translatedData.name,
     translated_ingredients: translatedData.ingredients,
     translated_allergens: translatedData.allergens,

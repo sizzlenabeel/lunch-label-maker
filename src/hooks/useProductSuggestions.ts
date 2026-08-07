@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
+import type { ProductType } from '../types';
 
 export interface ProductSuggestion {
   id: string;
@@ -14,6 +15,7 @@ export interface ProductSuggestion {
   is_only_for_storytel: boolean;
   is_snack: boolean;
   delivery_day: string | null;
+  types: ProductType[];
   translated_name?: string | null;
   translated_ingredients?: any; // Json type from database
   translated_allergens?: string | null;
@@ -48,6 +50,7 @@ export function useProductSuggestions() {
           is_only_for_storytel,
           is_snack,
           delivery_day,
+          types,
           translated_name,
           translated_ingredients,
           translated_allergens,

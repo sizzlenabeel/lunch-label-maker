@@ -163,6 +163,7 @@ export type Database = {
           translated_description: string | null
           translated_ingredients: Json | null
           translated_name: string | null
+          types: Database["public"]["Enums"]["product_type"][]
           user_id: string | null
           week_number: number | null
         }
@@ -189,6 +190,7 @@ export type Database = {
           translated_description?: string | null
           translated_ingredients?: Json | null
           translated_name?: string | null
+          types?: Database["public"]["Enums"]["product_type"][]
           user_id?: string | null
           week_number?: number | null
         }
@@ -215,6 +217,7 @@ export type Database = {
           translated_description?: string | null
           translated_ingredients?: Json | null
           translated_name?: string | null
+          types?: Database["public"]["Enums"]["product_type"][]
           user_id?: string | null
           week_number?: number | null
         }
@@ -269,7 +272,7 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      product_type: "FOOD" | "DRINK" | "BREAKFAST" | "SNACK"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -396,6 +399,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      product_type: ["FOOD", "DRINK", "BREAKFAST", "SNACK"],
+    },
   },
 } as const

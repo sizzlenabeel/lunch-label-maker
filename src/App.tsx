@@ -1,5 +1,6 @@
 import React from 'react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import type { Session } from '@supabase/supabase-js';
 import { LabelForm } from './components/LabelForm';
 import { LabelPDF } from './components/LabelPDF';
 import { StorytelLabelPDF } from './components/StorytelLabelPDF';
@@ -10,6 +11,8 @@ import { StandardMenuView } from './components/StandardMenuView';
 import { SnackLabelsView } from './components/SnackLabelsView';
 import { SnackMenuView } from './components/SnackMenuView';
 import { StorytelSnackMenuView } from './components/StorytelSnackMenuView';
+import { AuthControls } from './components/AuthControls';
+import { supabase } from './integrations/supabase/client';
 import type { FoodLabel } from './types';
 import { FileText, List, Sparkles, Cookie } from 'lucide-react';
 
@@ -18,6 +21,23 @@ function App() {
   const [activeView, setActiveView] = useState<'form' | 'list' | 'storytel-labels' | 'storytel-menu' | 'storytel-snack-menu' | 'standard-menu' | 'snack-labels' | 'snack-menu'>('form');
   const [previewFontSize, setPreviewFontSize] = useState<'normal' | 'small' | 'smaller'>('normal');
   const [activeLabelType, setActiveLabelType] = useState<'standard' | 'storytel'>('standard');
+  const [session, setSession] = useState<Session | null>(null);
+  const [isAuthLoading, setIsAuthLoading] = useState(true);
+  const isAdmin = session?.user.app_metadata?.role === 'admin';
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data }) => {
+      setSession(data.session);
+      setIsAuthLoading(false);
+    });
+
+    const { data: authListener } = supabase.auth.onAuthStateChange((_event, nextSession) => {
+      setSession(nextSession);
+      setIsAuthLoading(false);
+    });
+
+    return () => authListener.subscription.unsubscribe();
+  }, []);
 
   const handleFormSubmit = (data: FoodLabel) => {
     setLabelData(data);
@@ -29,6 +49,31 @@ function App() {
     }
   };
 
+  if (isAuthLoading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-gray-100">
+        <p className="text-sm text-gray-500">Loading…</p>
+      </div>
+    );
+  }
+
+  if (!session) {
+    return (
+      <main className="flex min-h-screen items-center justify-center bg-gradient-to-br from-orange-50 via-white to-amber-50 px-4">
+        <div className="w-full max-w-2xl rounded-2xl border border-orange-100 bg-white p-8 text-center shadow-xl sm:p-12">
+          <div className="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-2xl bg-orange-500 text-white shadow-lg shadow-orange-200">
+            <FileText className="h-9 w-9" />
+          </div>
+          <h1 className="text-3xl font-bold text-gray-900">Sizzle Labels and Menu</h1>
+          <p className="mx-auto mb-8 mt-3 max-w-md text-sm leading-6 text-gray-600">
+            Sign in with your approved account to access labels, products, and menus.
+          </p>
+          <AuthControls session={null} isAdmin={false} />
+        </div>
+      </main>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-gray-100">
       <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
@@ -38,6 +83,8 @@ function App() {
             Sizzle Labels and Menu
           </h1>
         </div>
+
+        <AuthControls session={session} isAdmin={isAdmin} />
 
         {/* Navigation Categories */}
         <div className="flex flex-wrap justify-center gap-6 mb-6">
@@ -156,7 +203,14 @@ function App() {
 
         <div className="px-4 py-6 sm:px-0">
           {activeView === 'form' ? (
-            !labelData ? (
+            !isAdmin ? (
+              <div className="rounded-lg border border-gray-200 bg-white p-8 text-center shadow">
+                <h2 className="text-lg font-semibold text-gray-900">Admin access required</h2>
+                <p className="mt-2 text-sm text-gray-600">
+                  Sign in with an admin account to create or update labels. Products and menus remain available to everyone.
+                </p>
+              </div>
+            ) : !labelData ? (
               <div className="bg-white shadow rounded-lg p-6">
                 <LabelForm onSubmit={handleFormSubmit} />
               </div>
@@ -229,7 +283,7 @@ function App() {
           ) : activeView === 'snack-menu' ? (
             <SnackMenuView />
           ) : (
-            <ProductsList />
+            <ProductsList isAdmin={isAdmin} />
           )}
         </div>
       </div>

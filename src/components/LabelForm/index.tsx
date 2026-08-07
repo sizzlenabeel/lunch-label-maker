@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { getWeek } from 'date-fns';
-import type { FoodLabel } from '../../types';
+import type { FoodLabel, ProductType } from '../../types';
 import { FormFields } from './FormFields';
 import { ProductSearch } from './ProductSearch';
 import { TranslationSection } from './TranslationSection';
@@ -48,7 +48,8 @@ export function LabelForm({ onSubmit }: LabelFormProps) {
     isForStorytel: false,
     isOnlyForStorytel: false,
     deliveryDay: '',
-    isSnack: false
+    isSnack: false,
+    types: ['FOOD']
   });
 
   const selectSuggestion = (suggestion: ProductSuggestion) => {
@@ -66,7 +67,8 @@ export function LabelForm({ onSubmit }: LabelFormProps) {
       isForStorytel: suggestion.is_for_storytel,
       isOnlyForStorytel: suggestion.is_only_for_storytel,
       isSnack: suggestion.is_snack || false,
-      deliveryDay: suggestion.delivery_day || ''
+      deliveryDay: suggestion.delivery_day || '',
+      types: suggestion.types?.length ? suggestion.types : ['FOOD']
     });
     // Set translation data if available
     const translatedIngredients = typeof suggestion.translated_ingredients === 'string' 
@@ -98,7 +100,8 @@ export function LabelForm({ onSubmit }: LabelFormProps) {
       isForStorytel: false,
       isOnlyForStorytel: false,
       deliveryDay: '',
-      isSnack: false
+      isSnack: false,
+      types: ['FOOD']
     });
     setTranslatedData({
       name: '',
@@ -122,7 +125,24 @@ export function LabelForm({ onSubmit }: LabelFormProps) {
 
   const handleSelectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
+  const handleProductTypeToggle = (type: ProductType) => {
+    setFormData(prev => {
+      const isSelected = prev.types.includes(type);
+      const nextTypes = isSelected
+        ? prev.types.filter(selectedType => selectedType !== type)
+        : [...prev.types, type];
+
+      return {
+        ...prev,
+        types: nextTypes.length > 0 ? nextTypes : ['FOOD']
+      };
+    });
   };
 
   const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -198,6 +218,7 @@ export function LabelForm({ onSubmit }: LabelFormProps) {
             handleSelectChange={handleSelectChange}
             handleCheckboxChange={handleCheckboxChange}
             handleDeliveryDayChange={handleDeliveryDayChange}
+            handleProductTypeToggle={handleProductTypeToggle}
           />
         </div>
         

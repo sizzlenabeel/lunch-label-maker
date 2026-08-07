@@ -1,5 +1,6 @@
 import React from 'react';
-import { Leaf, Cookie } from 'lucide-react';
+import { Check, Leaf, Cookie } from 'lucide-react';
+import type { ProductType } from '../../types';
 
 interface FormFieldsProps {
   formData: {
@@ -17,12 +18,14 @@ interface FormFieldsProps {
     isOnlyForStorytel: boolean;
     deliveryDay: string;
     isSnack: boolean;
+    types: ProductType[];
   };
   currentWeek: number;
   handleChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
   handleSelectChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
   handleCheckboxChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   handleDeliveryDayChange: (day: string) => void;
+  handleProductTypeToggle: (type: ProductType) => void;
 }
 
 export function FormFields({
@@ -31,12 +34,48 @@ export function FormFields({
   handleChange,
   handleSelectChange,
   handleCheckboxChange,
-  handleDeliveryDayChange
+  handleDeliveryDayChange,
+  handleProductTypeToggle
 }: FormFieldsProps) {
   const deliveryDays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
+  const productTypes: Array<{ value: ProductType; label: string }> = [
+    { value: 'FOOD', label: 'Food' },
+    { value: 'DRINK', label: 'Drink' },
+    { value: 'BREAKFAST', label: 'Breakfast' },
+    { value: 'SNACK', label: 'Snack' }
+  ];
   
   return (
     <>
+      <div>
+        <span className="block text-sm font-medium text-gray-700">
+          Product Type
+        </span>
+        <div className="mt-2 flex flex-wrap gap-2" role="group" aria-label="Product types">
+          {productTypes.map(({ value, label }) => {
+            const isSelected = formData.types.includes(value);
+
+            return (
+              <button
+                key={value}
+                type="button"
+                aria-pressed={isSelected}
+                onClick={() => handleProductTypeToggle(value)}
+                className={`inline-flex items-center gap-1.5 rounded-full border px-3.5 py-1.5 text-sm font-medium transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-orange-500 focus-visible:ring-offset-2 ${
+                  isSelected
+                    ? 'border-orange-500 bg-orange-500 text-white shadow-sm'
+                    : 'border-gray-300 bg-white text-gray-700 hover:border-orange-300 hover:bg-orange-50 hover:text-orange-700'
+                }`}
+              >
+                {isSelected && <Check className="h-3.5 w-3.5" />}
+                {label}
+              </button>
+            );
+          })}
+        </div>
+        <p className="mt-2 text-xs text-gray-500">Select one or more product types.</p>
+      </div>
+
       <div>
         <label htmlFor="price" className="block text-sm font-medium text-gray-700">
           Price (SEK) {formData.isOnlyForStorytel && <span className="text-gray-500 text-xs">(optional for Storytel-only)</span>}

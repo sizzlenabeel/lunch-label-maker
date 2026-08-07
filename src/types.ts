@@ -1,3 +1,7 @@
+import type { Database } from './integrations/supabase/types';
+
+export type ProductType = Database['public']['Enums']['product_type'];
+
 interface ProductSuggestion {
   id: string;
   name: string;
@@ -28,4 +32,5 @@ export interface FoodLabel {
   isOnlyForStorytel: boolean;
   deliveryDay: string;
   isSnack: boolean;
+  types: ProductType[];
 }

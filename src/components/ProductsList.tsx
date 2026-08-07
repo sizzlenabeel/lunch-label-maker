@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { getWeek } from 'date-fns';
 import { supabase } from '@/integrations/supabase/client';
-import { AlertTriangle, Cookie, Download, FileText, Leaf, Loader2, Package } from 'lucide-react';
+import { AlertTriangle, Cookie, Download, FileText, Leaf, Loader2, Package, Trash2 } from 'lucide-react';
 import { NewWeeklyMenuPDF } from './NewWeeklyMenuPDF';
 import { StorytelMenuPDF } from './StorytelMenuPDF';
 import { LabelPDF } from './LabelPDF';
@@ -9,9 +9,16 @@ import { StorytelLabelPDF } from './StorytelLabelPDF';
 import { SnackLabelPDF } from './SnackLabelPDF';
 import { downloadLabelsZip, downloadLabelsCombinedPdf } from '@/lib/bulkLabels';
 import type { FoodLabel } from '../types';
+import type { Database } from '@/integrations/supabase/types';
 
-export function ProductsList() {
-  const [products, setProducts] = useState<any[]>([]);
+type Product = Database['public']['Tables']['products']['Row'];
+
+interface ProductsListProps {
+  isAdmin?: boolean;
+}
+
+export function ProductsList({ isAdmin = false }: ProductsListProps) {
+  const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const currentWeek = getWeek(new Date(), { weekStartsOn: 1 });
@@ -20,7 +27,7 @@ export function ProductsList() {
   const [showMenu, setShowMenu] = useState(false);
   const [menuFontSize, setMenuFontSize] = useState<'normal' | 'small' | 'smaller'>('normal');
   const [menuType, setMenuType] = useState<'standard' | 'storytel'>('standard');
-  const [selectedProduct, setSelectedProduct] = useState<any | null>(null);
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [fontSize, setFontSize] = useState<'normal' | 'small' | 'smaller'>('normal');
   const scrollPositionRef = useRef(0);
   type BulkJob = 'food-zip' | 'food-pdf' | 'snack-zip' | 'snack-pdf';
@@ -43,7 +50,7 @@ export function ProductsList() {
     }
   };
 
-  const handleProductClick = (product: any) => {
+  const handleProductClick = (product: Product) => {
     scrollPositionRef.current = window.scrollY;
     setSelectedProduct(product);
   };
@@ -53,6 +60,18 @@ export function ProductsList() {
     requestAnimationFrame(() => {
       window.scrollTo(0, scrollPositionRef.current);
     });
+  };
+
+  const handleDeleteProduct = async (product: Product) => {
+    if (!isAdmin || !window.confirm(`Delete "${product.name}"? This cannot be undone.`)) return;
+
+    const { error: deleteError } = await supabase.from('products').delete().eq('id', product.id);
+    if (deleteError) {
+      setError(`Failed to delete product: ${deleteError.message}`);
+      return;
+    }
+
+    setProducts(currentProducts => currentProducts.filter(item => item.id !== product.id));
   };
 
   useEffect(() => {
@@ -84,26 +103,27 @@ export function ProductsList() {
     fetchProducts();
   }, [selectedWeek, showVeganOnly]);
 
-  const convertToLabelData = (product: any): FoodLabel => {
+  const convertToLabelData = (product: Product): FoodLabel => {
     return {
-      name: product.name,
-      dueDate: product.due_date,
+      name: product.name || '',
+      dueDate: product.due_date || '',
       price: product.price?.toString() || '',
-      ingredients: product.ingredients,
-      allergens: product.allergens,
-      consumptionGuidelines: product.consumption_guidelines,
-      description: product.description,
+      ingredients: product.ingredients || '',
+      allergens: product.allergens || '',
+      consumptionGuidelines: product.consumption_guidelines || '',
+      description: product.description || '',
       fontSize: fontSize,
-      weekNumber: product.week_number.toString(),
-      isVegan: product.is_vegan,
-      isForStorytel: product.is_for_storytel,
-      isOnlyForStorytel: product.is_only_for_storytel,
+      weekNumber: product.week_number?.toString() || '',
+      isVegan: product.is_vegan || false,
+      isForStorytel: product.is_for_storytel || false,
+      isOnlyForStorytel: product.is_only_for_storytel || false,
       deliveryDay: product.delivery_day || '',
-      isSnack: product.is_snack || false
+      isSnack: product.is_snack || false,
+      types: product.types?.length ? product.types : ['FOOD']
     };
   };
 
-  const renderLabelForProduct = (product: any) => {
+  const renderLabelForProduct = (product: Product) => {
     const labelData = convertToLabelData(product);
     if (product.is_only_for_storytel) {
       return <StorytelLabelPDF data={labelData} />;
@@ -369,13 +389,27 @@ export function ProductsList() {
         <div className="space-y-4">
           {products.map((product, index) => (
             <div
-              key={index}
+              key={product.id || index}
               className="border rounded-lg p-4 hover:bg-gray-50 transition-colors cursor-pointer"
               onClick={() => handleProductClick(product)}
             >
               <div className="flex justify-between items-start">
                 <h3 className="font-medium text-gray-900">{product.name}</h3>
                 <div className="flex gap-2 flex-wrap">
+                  {isAdmin && (
+                    <button
+                      type="button"
+                      onClick={event => {
+                        event.stopPropagation();
+                        handleDeleteProduct(product);
+                      }}
+                      className="inline-flex items-center gap-1 rounded-full border border-red-200 bg-white px-2 py-1 text-xs font-medium text-red-600 hover:bg-red-50"
+                      aria-label={`Delete ${product.name}`}
+                    >
+                      <Trash2 className="h-3 w-3" />
+                      Delete
+                    </button>
+                  )}
                   {product.is_snack && (
                     <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-amber-100 text-amber-800">
                       <Cookie className="w-3 h-3 mr-1" />
