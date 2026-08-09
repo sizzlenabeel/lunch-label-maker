@@ -12,9 +12,11 @@ interface ProductData {
   font_size: 'normal' | 'small' | 'smaller';
   week_number: number;
   is_vegan: boolean;
+  is_vegetarian: boolean;
   is_for_storytel: boolean;
   is_only_for_storytel: boolean;
   delivery_day: string;
+  storytel_delivery_days: string[];
   is_snack: boolean;
   types: ProductType[];
   translated_name?: string | null;

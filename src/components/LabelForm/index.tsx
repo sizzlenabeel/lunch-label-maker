@@ -159,6 +159,8 @@ export function LabelForm({ onSubmit }: LabelFormProps) {
       setFormData(prev => ({ ...prev, isOnlyForStorytel: true, isForStorytel: false }));
     } else if (name === 'isForStorytel' && checked) {
       setFormData(prev => ({ ...prev, isForStorytel: true, isOnlyForStorytel: false }));
+    } else if (name === 'isVegan' && checked) {
+      setFormData(prev => ({ ...prev, isVegan: true, isVegetarian: true }));
     } else {
       setFormData(prev => ({ ...prev, [name]: checked }));
     }
@@ -166,6 +168,18 @@ export function LabelForm({ onSubmit }: LabelFormProps) {
 
   const handleDeliveryDayChange = (day: string) => {
     setFormData(prev => ({ ...prev, deliveryDay: day }));
+  };
+
+  const handleStorytelDayToggle = (day: string) => {
+    setFormData(prev => {
+      const current = prev.storytelDeliveryDays ?? [];
+      return {
+        ...prev,
+        storytelDeliveryDays: current.includes(day)
+          ? current.filter(d => d !== day)
+          : [...current, day]
+      };
+    });
   };
 
   // Debug: Monitor weekNumber changes
@@ -224,6 +238,7 @@ export function LabelForm({ onSubmit }: LabelFormProps) {
             handleSelectChange={handleSelectChange}
             handleCheckboxChange={handleCheckboxChange}
             handleDeliveryDayChange={handleDeliveryDayChange}
+            handleStorytelDayToggle={handleStorytelDayToggle}
             handleProductTypeToggle={handleProductTypeToggle}
           />
         </div>

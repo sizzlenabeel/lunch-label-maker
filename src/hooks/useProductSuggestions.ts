@@ -10,11 +10,13 @@ export interface ProductSuggestion {
   consumption_guidelines: string;
   description: string;
   is_vegan: boolean;
+  is_vegetarian?: boolean | null;
   price: number | null;
   is_for_storytel: boolean;
   is_only_for_storytel: boolean;
   is_snack: boolean;
   delivery_day: string | null;
+  storytel_delivery_days?: string[] | null;
   types: ProductType[];
   translated_name?: string | null;
   translated_ingredients?: any; // Json type from database
