@@ -1,30 +1,15 @@
 import React from 'react';
-import { Check, Leaf, Cookie } from 'lucide-react';
-import type { ProductType } from '../../types';
+import { Check, Leaf, Cookie, Sprout } from 'lucide-react';
+import type { FoodLabel, ProductType } from '../../types';
 
 interface FormFieldsProps {
-  formData: {
-    name: string;
-    dueDate: string;
-    price: string;
-    ingredients: string;
-    allergens: string;
-    consumptionGuidelines: string;
-    description: string;
-    fontSize: 'normal' | 'small' | 'smaller';
-    weekNumber: string;
-    isVegan: boolean;
-    isForStorytel: boolean;
-    isOnlyForStorytel: boolean;
-    deliveryDay: string;
-    isSnack: boolean;
-    types: ProductType[];
-  };
+  formData: FoodLabel;
   currentWeek: number;
   handleChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
   handleSelectChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
   handleCheckboxChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   handleDeliveryDayChange: (day: string) => void;
+  handleStorytelDayToggle: (day: string) => void;
   handleProductTypeToggle: (type: ProductType) => void;
 }
 
@@ -35,15 +20,19 @@ export function FormFields({
   handleSelectChange,
   handleCheckboxChange,
   handleDeliveryDayChange,
+  handleStorytelDayToggle,
   handleProductTypeToggle
 }: FormFieldsProps) {
   const deliveryDays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
+  const selectedTypes = formData.types ?? [];
+  const storytelDays = formData.storytelDeliveryDays ?? [];
   const productTypes: Array<{ value: ProductType; label: string }> = [
     { value: 'FOOD', label: 'Food' },
     { value: 'DRINK', label: 'Drink' },
     { value: 'BREAKFAST', label: 'Breakfast' },
     { value: 'SNACK', label: 'Snack' }
   ];
+
   
   return (
     <>
@@ -53,7 +42,7 @@ export function FormFields({
         </span>
         <div className="mt-2 flex flex-wrap gap-2" role="group" aria-label="Product types">
           {productTypes.map(({ value, label }) => {
-            const isSelected = formData.types.includes(value);
+            const isSelected = selectedTypes.includes(value);
 
             return (
               <button
@@ -105,6 +94,22 @@ export function FormFields({
         <label htmlFor="isVegan" className="ml-2 block text-sm text-green-700 font-medium flex items-center">
           <Leaf className="w-4 h-4 mr-1" />
           This product is vegan
+        </label>
+      </div>
+
+      <div className="flex items-center bg-emerald-50 p-3 rounded-lg border border-emerald-200">
+        <input
+          type="checkbox"
+          id="isVegetarian"
+          name="isVegetarian"
+          checked={formData.isVegetarian || formData.isVegan}
+          disabled={formData.isVegan}
+          onChange={handleCheckboxChange}
+          className="h-5 w-5 text-emerald-600 focus:ring-emerald-500 border border-emerald-300 rounded disabled:cursor-not-allowed"
+        />
+        <label htmlFor="isVegetarian" className="ml-2 block text-sm text-emerald-700 font-medium flex items-center">
+          <Sprout className="w-4 h-4 mr-1" />
+          This product is vegetarian{formData.isVegan && <span className="ml-1 text-xs">(implied by vegan)</span>}
         </label>
       </div>
 
@@ -161,26 +166,34 @@ export function FormFields({
         {(formData.isForStorytel || formData.isOnlyForStorytel) && !formData.isSnack && (
           <div>
             <label className="block text-sm font-medium text-purple-900 mb-2">
-              Delivery Day (for Storytel Menu) *
+              Delivery Days (for Storytel Menu) *
             </label>
             <div className="flex flex-wrap gap-2">
-              {deliveryDays.map((day) => (
-                <button
-                  key={day}
-                  type="button"
-                  onClick={() => handleDeliveryDayChange(day)}
-                  className={`px-4 py-2 rounded-lg text-sm font-medium border-2 transition-colors ${
-                    formData.deliveryDay === day
-                      ? 'bg-orange-500 text-white border-orange-500'
-                      : 'bg-white text-orange-500 border-orange-500 hover:bg-orange-50'
-                  }`}
-                >
-                  {day}
-                </button>
-              ))}
+              {deliveryDays.map((day) => {
+                const isSelected = storytelDays.includes(day);
+                return (
+                  <button
+                    key={day}
+                    type="button"
+                    aria-pressed={isSelected}
+                    onClick={() => handleStorytelDayToggle(day)}
+                    className={`px-4 py-2 rounded-lg text-sm font-medium border-2 transition-colors ${
+                      isSelected
+                        ? 'bg-orange-500 text-white border-orange-500'
+                        : 'bg-white text-orange-500 border-orange-500 hover:bg-orange-50'
+                    }`}
+                  >
+                    {day}
+                  </button>
+                );
+              })}
             </div>
+            <p className="mt-2 text-xs text-purple-700">
+              Pick every day this dish is served. Consecutive days are grouped in the menu (e.g. Monday-Tuesday).
+            </p>
           </div>
         )}
+
       </div>
 
       <div>

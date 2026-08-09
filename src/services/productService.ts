@@ -12,9 +12,11 @@ interface ProductData {
   font_size: 'normal' | 'small' | 'smaller';
   week_number: number;
   is_vegan: boolean;
+  is_vegetarian: boolean;
   is_for_storytel: boolean;
   is_only_for_storytel: boolean;
   delivery_day: string;
+  storytel_delivery_days: string[];
   is_snack: boolean;
   types: ProductType[];
   translated_name?: string | null;
@@ -47,11 +49,13 @@ export async function saveProduct(
     font_size: formData.fontSize,
     week_number: parseInt(formData.weekNumber),
     is_vegan: formData.isVegan,
+    is_vegetarian: formData.isVegan || !!formData.isVegetarian,
     is_for_storytel: formData.isForStorytel,
     is_only_for_storytel: formData.isOnlyForStorytel,
     delivery_day: formData.deliveryDay,
+    storytel_delivery_days: formData.storytelDeliveryDays ?? [],
     is_snack: formData.isSnack,
-    types: formData.types.length > 0 ? formData.types : ['FOOD'],
+    types: formData.types?.length ? formData.types : ['FOOD'],
     translated_name: translatedData.name,
     translated_ingredients: translatedData.ingredients,
     translated_allergens: translatedData.allergens,

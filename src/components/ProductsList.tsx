@@ -422,6 +422,12 @@ export function ProductsList({ isAdmin = false }: ProductsListProps) {
                       Vegan
                     </span>
                   )}
+                  {!product.is_vegan && product.is_vegetarian && (
+                    <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-emerald-100 text-emerald-800">
+                      <Leaf className="w-3 h-3 mr-1" />
+                      Vegetarian
+                    </span>
+                  )}
                   {product.is_only_for_storytel && (
                     <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
                       Only Storytel
@@ -435,11 +441,15 @@ export function ProductsList({ isAdmin = false }: ProductsListProps) {
                 </div>
               </div>
               <p className="text-sm text-gray-600 mt-1">{product.description}</p>
-              {product.delivery_day && (
+              {product.storytel_delivery_days?.length ? (
+                <p className="text-xs text-purple-600 mt-2">
+                  Storytel days: {product.storytel_delivery_days.join(', ')}
+                </p>
+              ) : product.delivery_day ? (
                 <p className="text-xs text-purple-600 mt-2">
                   Delivery: {product.delivery_day}
                 </p>
-              )}
+              ) : null}
               {product.allergens && (
                 <p className="text-sm text-red-600 mt-2">
                   <span className="font-medium">Allergens:</span> {product.allergens}

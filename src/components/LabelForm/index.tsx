@@ -45,9 +45,11 @@ export function LabelForm({ onSubmit }: LabelFormProps) {
     fontSize: 'smaller',
     weekNumber: currentWeek.toString(),
     isVegan: false,
+    isVegetarian: false,
     isForStorytel: false,
     isOnlyForStorytel: false,
     deliveryDay: '',
+    storytelDeliveryDays: [],
     isSnack: false,
     types: ['FOOD']
   });
@@ -64,10 +66,12 @@ export function LabelForm({ onSubmit }: LabelFormProps) {
       consumptionGuidelines: suggestion.consumption_guidelines,
       description: suggestion.description,
       isVegan: suggestion.is_vegan,
+      isVegetarian: suggestion.is_vegetarian || false,
       isForStorytel: suggestion.is_for_storytel,
       isOnlyForStorytel: suggestion.is_only_for_storytel,
       isSnack: suggestion.is_snack || false,
       deliveryDay: suggestion.delivery_day || '',
+      storytelDeliveryDays: suggestion.storytel_delivery_days || [],
       types: suggestion.types?.length ? suggestion.types : ['FOOD']
     });
     // Set translation data if available
@@ -97,9 +101,11 @@ export function LabelForm({ onSubmit }: LabelFormProps) {
       fontSize: 'smaller',
       weekNumber: currentWeek.toString(),
       isVegan: false,
+      isVegetarian: false,
       isForStorytel: false,
       isOnlyForStorytel: false,
       deliveryDay: '',
+      storytelDeliveryDays: [],
       isSnack: false,
       types: ['FOOD']
     });
@@ -153,6 +159,8 @@ export function LabelForm({ onSubmit }: LabelFormProps) {
       setFormData(prev => ({ ...prev, isOnlyForStorytel: true, isForStorytel: false }));
     } else if (name === 'isForStorytel' && checked) {
       setFormData(prev => ({ ...prev, isForStorytel: true, isOnlyForStorytel: false }));
+    } else if (name === 'isVegan' && checked) {
+      setFormData(prev => ({ ...prev, isVegan: true, isVegetarian: true }));
     } else {
       setFormData(prev => ({ ...prev, [name]: checked }));
     }
@@ -160,6 +168,18 @@ export function LabelForm({ onSubmit }: LabelFormProps) {
 
   const handleDeliveryDayChange = (day: string) => {
     setFormData(prev => ({ ...prev, deliveryDay: day }));
+  };
+
+  const handleStorytelDayToggle = (day: string) => {
+    setFormData(prev => {
+      const current = prev.storytelDeliveryDays ?? [];
+      return {
+        ...prev,
+        storytelDeliveryDays: current.includes(day)
+          ? current.filter(d => d !== day)
+          : [...current, day]
+      };
+    });
   };
 
   // Debug: Monitor weekNumber changes
@@ -218,6 +238,7 @@ export function LabelForm({ onSubmit }: LabelFormProps) {
             handleSelectChange={handleSelectChange}
             handleCheckboxChange={handleCheckboxChange}
             handleDeliveryDayChange={handleDeliveryDayChange}
+            handleStorytelDayToggle={handleStorytelDayToggle}
             handleProductTypeToggle={handleProductTypeToggle}
           />
         </div>

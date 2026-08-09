@@ -22,7 +22,8 @@ interface StorytelMenuItem {
   description: string;
   allergens: string;
   isVegan: boolean;
-  deliveryDay: string;
+  isVegetarian: boolean;
+  deliveryDays: string[];
 }
 
 const styles = StyleSheet.create({
@@ -232,10 +233,9 @@ export function StorytelMenuPDF({ weekNumber, fontSize }: StorytelMenuProps) {
 
   React.useEffect(() => {
     async function fetchMenuItems() {
-      console.log(`[StorytelMenuPDF] Fetching items for week ${weekNumber}...`);
       try {
         setLoading(true);
-        
+
         const { data, error } = await supabase
           .from('products')
           .select(`
@@ -243,29 +243,32 @@ export function StorytelMenuPDF({ weekNumber, fontSize }: StorytelMenuProps) {
             translated_description,
             translated_allergens,
             is_vegan,
+            is_vegetarian,
             delivery_day,
+            storytel_delivery_days,
             is_snack
           `)
           .eq('week_number', weekNumber)
           .or('is_for_storytel.eq.true,is_only_for_storytel.eq.true')
-          .or('is_snack.eq.false,is_snack.is.null')
-          .not('delivery_day', 'is', null);
+          .or('is_snack.eq.false,is_snack.is.null');
 
         if (error) throw error;
 
-        console.log(`[StorytelMenuPDF] Raw data for week ${weekNumber}:`, data);
-
         const items: StorytelMenuItem[] = (data || [])
           .filter(product => product.translated_name)
-          .map((product) => ({
-            name: product.translated_name || '',
-            description: product.translated_description || '',
-            allergens: product.translated_allergens || '',
-            isVegan: product.is_vegan || false,
-            deliveryDay: product.delivery_day || '',
-          }));
+          .map((product) => {
+            const days = (product.storytel_delivery_days as string[] | null) ?? [];
+            return {
+              name: product.translated_name || '',
+              description: product.translated_description || '',
+              allergens: product.translated_allergens || '',
+              isVegan: product.is_vegan || false,
+              isVegetarian: product.is_vegetarian || product.is_vegan || false,
+              deliveryDays: days.length ? days : (product.delivery_day ? [product.delivery_day] : []),
+            };
+          })
+          .filter(item => item.deliveryDays.length > 0);
 
-        console.log(`[StorytelMenuPDF] Processed ${items.length} items for week ${weekNumber}`);
         setMenuItems(items);
       } catch (err) {
         console.error('Error fetching Storytel menu items:', err);
@@ -287,10 +290,37 @@ export function StorytelMenuPDF({ weekNumber, fontSize }: StorytelMenuProps) {
   }
 
   const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
-  const itemsByDay = days.reduce((acc, day) => {
-    acc[day] = menuItems.filter(item => item.deliveryDay === day);
-    return acc;
-  }, {} as Record<string, StorytelMenuItem[]>);
+
+  const sortDays = (list: string[]) =>
+    [...new Set(list)].filter(d => days.includes(d)).sort((a, b) => days.indexOf(a) - days.indexOf(b));
+
+  // Format a sorted day list into ranges: ['Monday','Tuesday'] -> 'Monday-Tuesday'
+  const formatDays = (sorted: string[]) => {
+    const parts: string[] = [];
+    let start = 0;
+    for (let i = 0; i < sorted.length; i++) {
+      const isLast = i === sorted.length - 1;
+      const consecutive = !isLast && days.indexOf(sorted[i + 1]) === days.indexOf(sorted[i]) + 1;
+      if (!consecutive) {
+        parts.push(start === i ? sorted[i] : `${sorted[start]}-${sorted[i]}`);
+        start = i + 1;
+      }
+    }
+    return parts.join(', ');
+  };
+
+  // Group items by their exact set of delivery days
+  const groupMap = new Map<string, { days: string[]; items: StorytelMenuItem[] }>();
+  menuItems.forEach((item) => {
+    const sorted = sortDays(item.deliveryDays);
+    const key = sorted.join('|');
+    if (!groupMap.has(key)) groupMap.set(key, { days: sorted, items: [] });
+    groupMap.get(key)!.items.push(item);
+  });
+
+  const groups = [...groupMap.values()].sort(
+    (a, b) => days.indexOf(a.days[0]) - days.indexOf(b.days[0])
+  );
 
   return (
     <PDFViewer width="100%" height="800px">
@@ -299,28 +329,30 @@ export function StorytelMenuPDF({ weekNumber, fontSize }: StorytelMenuProps) {
           <View style={styles.header}>
             <Text style={getStyle('companyName')}>Sizzle</Text>
             <Text style={getStyle('weekInfo')}>Week {weekNumber}</Text>
-            <Text style={getStyle('title')}>Storytel Weekly Menu</Text>
+            <Text style={getStyle('title')}>Weekly Menu</Text>
           </View>
 
-          {days.map((day) => (
-            <View key={day} style={getStyle('daySection')}>
-              <Text style={getStyle('dayHeader')}>{day}</Text>
-              {itemsByDay[day].length > 0 ? (
-                itemsByDay[day].map((item, index) => (
-                  <View key={`${day}-${index}`} style={getStyle('menuItem')}>
+          {groups.length === 0 ? (
+            <Text style={getStyle('noDishes')}>No dishes scheduled</Text>
+          ) : (
+            groups.map((group) => (
+              <View key={group.days.join('|')} style={getStyle('daySection')}>
+                <Text style={getStyle('dayHeader')}>{formatDays(group.days)}</Text>
+                {group.items.map((item, index) => (
+                  <View key={`${group.days.join('-')}-${index}`} style={getStyle('menuItem')}>
                     <Text style={getStyle('itemName')}>{item.name}</Text>
                     <Text style={getStyle('description')}>{item.description}</Text>
                     <Text style={getStyle('allergens')}>Allergens: {item.allergens}</Text>
-                    {item.isVegan && (
+                    {item.isVegan ? (
                       <Text style={getStyle('veganBadge')}>Vegan</Text>
-                    )}
+                    ) : item.isVegetarian ? (
+                      <Text style={getStyle('veganBadge')}>Vegetarian</Text>
+                    ) : null}
                   </View>
-                ))
-              ) : (
-                <Text style={getStyle('noDishes')}>No dishes scheduled</Text>
-              )}
-            </View>
-          ))}
+                ))}
+              </View>
+            ))
+          )}
         </Page>
       </Document>
     </PDFViewer>

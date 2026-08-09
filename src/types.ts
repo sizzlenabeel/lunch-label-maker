@@ -27,10 +27,12 @@ export interface FoodLabel {
   fontSize: 'normal' | 'small' | 'smaller';
   weekNumber: string;
   isVegan: boolean;
+  isVegetarian?: boolean;
   price: string;
   isForStorytel: boolean;
   isOnlyForStorytel: boolean;
   deliveryDay: string;
+  storytelDeliveryDays?: string[];
   isSnack: boolean;
-  types: ProductType[];
+  types?: ProductType[];
 }
