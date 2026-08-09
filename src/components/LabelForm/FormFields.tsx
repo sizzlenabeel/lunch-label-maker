@@ -1,30 +1,15 @@
 import React from 'react';
-import { Check, Leaf, Cookie } from 'lucide-react';
-import type { ProductType } from '../../types';
+import { Check, Leaf, Cookie, Sprout } from 'lucide-react';
+import type { FoodLabel, ProductType } from '../../types';
 
 interface FormFieldsProps {
-  formData: {
-    name: string;
-    dueDate: string;
-    price: string;
-    ingredients: string;
-    allergens: string;
-    consumptionGuidelines: string;
-    description: string;
-    fontSize: 'normal' | 'small' | 'smaller';
-    weekNumber: string;
-    isVegan: boolean;
-    isForStorytel: boolean;
-    isOnlyForStorytel: boolean;
-    deliveryDay: string;
-    isSnack: boolean;
-    types: ProductType[];
-  };
+  formData: FoodLabel;
   currentWeek: number;
   handleChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
   handleSelectChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
   handleCheckboxChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   handleDeliveryDayChange: (day: string) => void;
+  handleStorytelDayToggle: (day: string) => void;
   handleProductTypeToggle: (type: ProductType) => void;
 }
 
@@ -35,15 +20,19 @@ export function FormFields({
   handleSelectChange,
   handleCheckboxChange,
   handleDeliveryDayChange,
+  handleStorytelDayToggle,
   handleProductTypeToggle
 }: FormFieldsProps) {
   const deliveryDays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
+  const selectedTypes = formData.types ?? [];
+  const storytelDays = formData.storytelDeliveryDays ?? [];
   const productTypes: Array<{ value: ProductType; label: string }> = [
     { value: 'FOOD', label: 'Food' },
     { value: 'DRINK', label: 'Drink' },
     { value: 'BREAKFAST', label: 'Breakfast' },
     { value: 'SNACK', label: 'Snack' }
   ];
+
   
   return (
     <>
