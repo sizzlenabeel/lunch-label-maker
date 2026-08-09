@@ -22,6 +22,7 @@ interface MenuItem {
     price?: number | null;
   };
   isVegan: boolean;
+  isVegetarian: boolean;
 }
 
 const styles = StyleSheet.create({
