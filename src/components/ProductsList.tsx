@@ -441,11 +441,15 @@ export function ProductsList({ isAdmin = false }: ProductsListProps) {
                 </div>
               </div>
               <p className="text-sm text-gray-600 mt-1">{product.description}</p>
-              {product.delivery_day && (
+              {product.storytel_delivery_days?.length ? (
+                <p className="text-xs text-purple-600 mt-2">
+                  Storytel days: {product.storytel_delivery_days.join(', ')}
+                </p>
+              ) : product.delivery_day ? (
                 <p className="text-xs text-purple-600 mt-2">
                   Delivery: {product.delivery_day}
                 </p>
-              )}
+              ) : null}
               {product.allergens && (
                 <p className="text-sm text-red-600 mt-2">
                   <span className="font-medium">Allergens:</span> {product.allergens}
