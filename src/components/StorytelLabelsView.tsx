@@ -157,11 +157,15 @@ export function StorytelLabelsView() {
                 </div>
               </div>
               <p className="text-sm text-gray-600 mt-1">{product.description}</p>
-              {product.delivery_day && (
+              {product.storytel_delivery_days?.length ? (
+                <p className="text-xs text-purple-600 mt-2">
+                  Storytel days: {product.storytel_delivery_days.join(', ')}
+                </p>
+              ) : product.delivery_day ? (
                 <p className="text-xs text-purple-600 mt-2">
                   Delivery: {product.delivery_day}
                 </p>
-              )}
+              ) : null}
               <p className="text-xs text-purple-500 mt-2 italic">
                 Click to generate labels
               </p>
