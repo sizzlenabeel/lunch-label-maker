@@ -45,9 +45,11 @@ export function LabelForm({ onSubmit }: LabelFormProps) {
     fontSize: 'smaller',
     weekNumber: currentWeek.toString(),
     isVegan: false,
+    isVegetarian: false,
     isForStorytel: false,
     isOnlyForStorytel: false,
     deliveryDay: '',
+    storytelDeliveryDays: [],
     isSnack: false,
     types: ['FOOD']
   });
