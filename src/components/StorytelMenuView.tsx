@@ -44,8 +44,8 @@ export function StorytelMenuView() {
 
       <div className="bg-purple-50 border border-purple-200 rounded-lg p-4 mb-6">
         <p className="text-sm text-purple-800">
-          This menu shows all Storytel products organized by delivery day for week {selectedWeek}.
-          Only English translations are shown, and prices are not included.
+          This menu shows all Storytel dishes for week {selectedWeek}, grouped by the days they are served
+          (e.g. Monday-Tuesday). Only English translations are shown, and prices are not included.
         </p>
       </div>
 
