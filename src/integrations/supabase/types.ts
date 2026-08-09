@@ -149,6 +149,7 @@ export type Database = {
           due_date: string | null
           font_size: string | null
           id: string
+          image_url: string | null
           ingredients: string | null
           is_for_storytel: boolean | null
           is_only_for_storytel: boolean | null
@@ -157,13 +158,14 @@ export type Database = {
           name: string | null
           numeric_id: number
           price: number | null
+          show_duedate: boolean | null
           sizzle_deliveryday: string | null
           translated_allergens: string | null
           translated_consumption_guidelines: string | null
           translated_description: string | null
           translated_ingredients: Json | null
           translated_name: string | null
-          types: Database["public"]["Enums"]["product_type"][]
+          types: Database["public"]["Enums"]["product_type"][] | null
           user_id: string | null
           week_number: number | null
         }
@@ -176,6 +178,7 @@ export type Database = {
           due_date?: string | null
           font_size?: string | null
           id: string
+          image_url?: string | null
           ingredients?: string | null
           is_for_storytel?: boolean | null
           is_only_for_storytel?: boolean | null
@@ -184,13 +187,14 @@ export type Database = {
           name?: string | null
           numeric_id?: number
           price?: number | null
+          show_duedate?: boolean | null
           sizzle_deliveryday?: string | null
           translated_allergens?: string | null
           translated_consumption_guidelines?: string | null
           translated_description?: string | null
           translated_ingredients?: Json | null
           translated_name?: string | null
-          types?: Database["public"]["Enums"]["product_type"][]
+          types?: Database["public"]["Enums"]["product_type"][] | null
           user_id?: string | null
           week_number?: number | null
         }
@@ -203,6 +207,7 @@ export type Database = {
           due_date?: string | null
           font_size?: string | null
           id?: string
+          image_url?: string | null
           ingredients?: string | null
           is_for_storytel?: boolean | null
           is_only_for_storytel?: boolean | null
@@ -211,13 +216,14 @@ export type Database = {
           name?: string | null
           numeric_id?: number
           price?: number | null
+          show_duedate?: boolean | null
           sizzle_deliveryday?: string | null
           translated_allergens?: string | null
           translated_consumption_guidelines?: string | null
           translated_description?: string | null
           translated_ingredients?: Json | null
           translated_name?: string | null
-          types?: Database["public"]["Enums"]["product_type"][]
+          types?: Database["public"]["Enums"]["product_type"][] | null
           user_id?: string | null
           week_number?: number | null
         }
