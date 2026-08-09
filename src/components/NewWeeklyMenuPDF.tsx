@@ -244,6 +244,7 @@ export function NewWeeklyMenuPDF({ weekNumber, veganOnly, fontSize }: WeeklyMenu
             allergens,
             price,
             is_vegan,
+            is_vegetarian,
             is_only_for_storytel,
             is_snack,
             translated_name,
@@ -277,6 +278,7 @@ export function NewWeeklyMenuPDF({ weekNumber, veganOnly, fontSize }: WeeklyMenu
             price: product.price,
           } : undefined,
           isVegan: product.is_vegan,
+          isVegetarian: product.is_vegetarian || product.is_vegan || false,
         }));
 
         setMenuItems(items);
@@ -319,9 +321,11 @@ export function NewWeeklyMenuPDF({ weekNumber, veganOnly, fontSize }: WeeklyMenu
         </Text>
         <Text style={getStyle('description')}>{content.description}</Text>
         <Text style={getStyle('allergens')}>Allergens: {content.allergens}</Text>
-        {item.isVegan && (
+        {item.isVegan ? (
           <Text style={getStyle('veganBadge')}>Vegan</Text>
-        )}
+        ) : item.isVegetarian ? (
+          <Text style={getStyle('veganBadge')}>Vegetarian</Text>
+        ) : null}
       </View>
     );
   };
