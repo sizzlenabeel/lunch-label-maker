@@ -66,10 +66,12 @@ export function LabelForm({ onSubmit }: LabelFormProps) {
       consumptionGuidelines: suggestion.consumption_guidelines,
       description: suggestion.description,
       isVegan: suggestion.is_vegan,
+      isVegetarian: suggestion.is_vegetarian || false,
       isForStorytel: suggestion.is_for_storytel,
       isOnlyForStorytel: suggestion.is_only_for_storytel,
       isSnack: suggestion.is_snack || false,
       deliveryDay: suggestion.delivery_day || '',
+      storytelDeliveryDays: suggestion.storytel_delivery_days || [],
       types: suggestion.types?.length ? suggestion.types : ['FOOD']
     });
     // Set translation data if available
@@ -99,9 +101,11 @@ export function LabelForm({ onSubmit }: LabelFormProps) {
       fontSize: 'smaller',
       weekNumber: currentWeek.toString(),
       isVegan: false,
+      isVegetarian: false,
       isForStorytel: false,
       isOnlyForStorytel: false,
       deliveryDay: '',
+      storytelDeliveryDays: [],
       isSnack: false,
       types: ['FOOD']
     });
