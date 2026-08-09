@@ -22,7 +22,8 @@ interface StorytelMenuItem {
   description: string;
   allergens: string;
   isVegan: boolean;
-  deliveryDay: string;
+  isVegetarian: boolean;
+  deliveryDays: string[];
 }
 
 const styles = StyleSheet.create({
