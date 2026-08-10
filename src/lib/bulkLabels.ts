@@ -76,7 +76,13 @@ function pickVariant(product: any): LabelVariant {
   return 'standard';
 }
 
-function productToLabel(product: any): FoodLabel {
+type FontSize = FoodLabel['fontSize'];
+
+function normalizeFontSize(value: any): FontSize {
+  return value === 'small' || value === 'smaller' ? value : 'normal';
+}
+
+function productToLabel(product: any, fontSizeOverride?: FontSize): FoodLabel {
   return {
     name: product.name,
     dueDate: product.due_date,
@@ -85,7 +91,7 @@ function productToLabel(product: any): FoodLabel {
     allergens: product.allergens,
     consumptionGuidelines: product.consumption_guidelines,
     description: product.description,
-    fontSize: 'normal',
+    fontSize: fontSizeOverride ?? normalizeFontSize(product.font_size),
     weekNumber: product.week_number?.toString() || '',
     isVegan: product.is_vegan,
     isForStorytel: product.is_for_storytel,
@@ -165,18 +171,18 @@ function LabelPage({ data, variant }: { data: FoodLabel; variant: LabelVariant }
   );
 }
 
-function singleDocument(product: any) {
-  const data = productToLabel(product);
+function singleDocument(product: any, fontSizeOverride?: FontSize) {
+  const data = productToLabel(product, fontSizeOverride);
   const variant = pickVariant(product);
   return React.createElement(Document, null, React.createElement(LabelPage, { data, variant }));
 }
 
-function combinedDocument(products: any[]) {
+function combinedDocument(products: any[], fontSizeOverride?: FontSize) {
   return React.createElement(
     Document,
     null,
     products.map((product, i) => {
-      const data = productToLabel(product);
+      const data = productToLabel(product, fontSizeOverride);
       const variant = pickVariant(product);
       return React.createElement(LabelPage, { key: i, data, variant });
     }),
@@ -203,12 +209,16 @@ function triggerDownload(blob: Blob, filename: string) {
   setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
 
-export async function downloadLabelsZip(products: any[], zipName: string) {
+export async function downloadLabelsZip(
+  products: any[],
+  zipName: string,
+  fontSizeOverride?: FontSize,
+) {
   const zip = new JSZip();
   const seen = new Map<string, number>();
   for (const product of products) {
-    const doc = singleDocument(product);
-    
+    const doc = singleDocument(product, fontSizeOverride);
+
     const blob: Blob = await pdf(doc).toBlob();
     let name = sanitizeFilename(product.name);
     const count = seen.get(name) || 0;
@@ -220,9 +230,13 @@ export async function downloadLabelsZip(products: any[], zipName: string) {
   triggerDownload(zipBlob, zipName);
 }
 
-export async function downloadLabelsCombinedPdf(products: any[], fileName: string) {
-  const doc = combinedDocument(products);
-  
+export async function downloadLabelsCombinedPdf(
+  products: any[],
+  fileName: string,
+  fontSizeOverride?: FontSize,
+) {
+  const doc = combinedDocument(products, fontSizeOverride);
+
   const blob: Blob = await pdf(doc).toBlob();
   triggerDownload(blob, fileName);
 }

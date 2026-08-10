@@ -33,6 +33,8 @@ export function ProductsList({ isAdmin = false }: ProductsListProps) {
   type BulkJob = 'food-zip' | 'food-pdf' | 'snack-zip' | 'snack-pdf';
   const [bulkBusy, setBulkBusy] = useState<BulkJob | null>(null);
   const [bulkError, setBulkError] = useState<string | null>(null);
+  const [bulkFontSize, setBulkFontSize] = useState<'auto' | 'normal' | 'small' | 'smaller'>('auto');
+  const bulkFontOverride = bulkFontSize === 'auto' ? undefined : bulkFontSize;
 
   const foodProducts = useMemo(() => products.filter((p) => !p.is_snack), [products]);
   const snackProducts = useMemo(() => products.filter((p) => p.is_snack), [products]);
@@ -255,11 +257,27 @@ export function ProductsList({ isAdmin = false }: ProductsListProps) {
               <Download className="w-4 h-4" />
               Bulk download (Week {selectedWeek})
             </h3>
-            {bulkError && (
-              <span className="text-xs text-red-600 flex items-center gap-1">
-                <AlertTriangle className="w-3 h-3" /> {bulkError}
-              </span>
-            )}
+            <div className="flex items-center gap-2">
+              {bulkError && (
+                <span className="text-xs text-red-600 flex items-center gap-1">
+                  <AlertTriangle className="w-3 h-3" /> {bulkError}
+                </span>
+              )}
+              <label className="text-xs text-gray-600" htmlFor="bulk-font-size">
+                Font size
+              </label>
+              <select
+                id="bulk-font-size"
+                value={bulkFontSize}
+                onChange={(e) => setBulkFontSize(e.target.value as typeof bulkFontSize)}
+                className="text-sm border border-gray-300 rounded px-2 py-1 bg-white"
+              >
+                <option value="auto">Auto (per product)</option>
+                <option value="normal">Normal</option>
+                <option value="small">Small</option>
+                <option value="smaller">Smaller</option>
+              </select>
+            </div>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="border border-orange-200 rounded-md p-3 bg-white">
@@ -273,7 +291,7 @@ export function ProductsList({ isAdmin = false }: ProductsListProps) {
                 <button
                   onClick={() =>
                     runBulk('food-zip', () =>
-                      downloadLabelsZip(foodProducts, `food-labels-week-${selectedWeek}.zip`),
+                      downloadLabelsZip(foodProducts, `food-labels-week-${selectedWeek}.zip`, bulkFontOverride),
                     )
                   }
                   disabled={foodProducts.length === 0 || bulkBusy !== null}
@@ -292,6 +310,7 @@ export function ProductsList({ isAdmin = false }: ProductsListProps) {
                       downloadLabelsCombinedPdf(
                         foodProducts,
                         `food-labels-week-${selectedWeek}.pdf`,
+                        bulkFontOverride,
                       ),
                     )
                   }
@@ -319,7 +338,7 @@ export function ProductsList({ isAdmin = false }: ProductsListProps) {
                 <button
                   onClick={() =>
                     runBulk('snack-zip', () =>
-                      downloadLabelsZip(snackProducts, `snack-labels-week-${selectedWeek}.zip`),
+                      downloadLabelsZip(snackProducts, `snack-labels-week-${selectedWeek}.zip`, bulkFontOverride),
                     )
                   }
                   disabled={snackProducts.length === 0 || bulkBusy !== null}
@@ -338,6 +357,7 @@ export function ProductsList({ isAdmin = false }: ProductsListProps) {
                       downloadLabelsCombinedPdf(
                         snackProducts,
                         `snack-labels-week-${selectedWeek}.pdf`,
+                        bulkFontOverride,
                       ),
                     )
                   }
