@@ -76,7 +76,13 @@ function pickVariant(product: any): LabelVariant {
   return 'standard';
 }
 
-function productToLabel(product: any): FoodLabel {
+type FontSize = FoodLabel['fontSize'];
+
+function normalizeFontSize(value: any): FontSize {
+  return value === 'small' || value === 'smaller' ? value : 'normal';
+}
+
+function productToLabel(product: any, fontSizeOverride?: FontSize): FoodLabel {
   return {
     name: product.name,
     dueDate: product.due_date,
