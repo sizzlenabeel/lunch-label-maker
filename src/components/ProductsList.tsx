@@ -33,6 +33,8 @@ export function ProductsList({ isAdmin = false }: ProductsListProps) {
   type BulkJob = 'food-zip' | 'food-pdf' | 'snack-zip' | 'snack-pdf';
   const [bulkBusy, setBulkBusy] = useState<BulkJob | null>(null);
   const [bulkError, setBulkError] = useState<string | null>(null);
+  const [bulkFontSize, setBulkFontSize] = useState<'auto' | 'normal' | 'small' | 'smaller'>('auto');
+  const bulkFontOverride = bulkFontSize === 'auto' ? undefined : bulkFontSize;
 
   const foodProducts = useMemo(() => products.filter((p) => !p.is_snack), [products]);
   const snackProducts = useMemo(() => products.filter((p) => p.is_snack), [products]);
