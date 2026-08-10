@@ -171,18 +171,18 @@ function LabelPage({ data, variant }: { data: FoodLabel; variant: LabelVariant }
   );
 }
 
-function singleDocument(product: any) {
-  const data = productToLabel(product);
+function singleDocument(product: any, fontSizeOverride?: FontSize) {
+  const data = productToLabel(product, fontSizeOverride);
   const variant = pickVariant(product);
   return React.createElement(Document, null, React.createElement(LabelPage, { data, variant }));
 }
 
-function combinedDocument(products: any[]) {
+function combinedDocument(products: any[], fontSizeOverride?: FontSize) {
   return React.createElement(
     Document,
     null,
     products.map((product, i) => {
-      const data = productToLabel(product);
+      const data = productToLabel(product, fontSizeOverride);
       const variant = pickVariant(product);
       return React.createElement(LabelPage, { key: i, data, variant });
     }),
