@@ -257,11 +257,27 @@ export function ProductsList({ isAdmin = false }: ProductsListProps) {
               <Download className="w-4 h-4" />
               Bulk download (Week {selectedWeek})
             </h3>
-            {bulkError && (
-              <span className="text-xs text-red-600 flex items-center gap-1">
-                <AlertTriangle className="w-3 h-3" /> {bulkError}
-              </span>
-            )}
+            <div className="flex items-center gap-2">
+              {bulkError && (
+                <span className="text-xs text-red-600 flex items-center gap-1">
+                  <AlertTriangle className="w-3 h-3" /> {bulkError}
+                </span>
+              )}
+              <label className="text-xs text-gray-600" htmlFor="bulk-font-size">
+                Font size
+              </label>
+              <select
+                id="bulk-font-size"
+                value={bulkFontSize}
+                onChange={(e) => setBulkFontSize(e.target.value as typeof bulkFontSize)}
+                className="text-sm border border-gray-300 rounded px-2 py-1 bg-white"
+              >
+                <option value="auto">Auto (per product)</option>
+                <option value="normal">Normal</option>
+                <option value="small">Small</option>
+                <option value="smaller">Smaller</option>
+              </select>
+            </div>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="border border-orange-200 rounded-md p-3 bg-white">
