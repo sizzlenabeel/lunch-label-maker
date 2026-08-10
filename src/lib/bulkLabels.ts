@@ -209,12 +209,16 @@ function triggerDownload(blob: Blob, filename: string) {
   setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
 
-export async function downloadLabelsZip(products: any[], zipName: string) {
+export async function downloadLabelsZip(
+  products: any[],
+  zipName: string,
+  fontSizeOverride?: FontSize,
+) {
   const zip = new JSZip();
   const seen = new Map<string, number>();
   for (const product of products) {
-    const doc = singleDocument(product);
-    
+    const doc = singleDocument(product, fontSizeOverride);
+
     const blob: Blob = await pdf(doc).toBlob();
     let name = sanitizeFilename(product.name);
     const count = seen.get(name) || 0;
@@ -226,9 +230,13 @@ export async function downloadLabelsZip(products: any[], zipName: string) {
   triggerDownload(zipBlob, zipName);
 }
 
-export async function downloadLabelsCombinedPdf(products: any[], fileName: string) {
-  const doc = combinedDocument(products);
-  
+export async function downloadLabelsCombinedPdf(
+  products: any[],
+  fileName: string,
+  fontSizeOverride?: FontSize,
+) {
+  const doc = combinedDocument(products, fontSizeOverride);
+
   const blob: Blob = await pdf(doc).toBlob();
   triggerDownload(blob, fileName);
 }
