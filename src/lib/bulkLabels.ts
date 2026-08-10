@@ -91,7 +91,7 @@ function productToLabel(product: any, fontSizeOverride?: FontSize): FoodLabel {
     allergens: product.allergens,
     consumptionGuidelines: product.consumption_guidelines,
     description: product.description,
-    fontSize: 'normal',
+    fontSize: fontSizeOverride ?? normalizeFontSize(product.font_size),
     weekNumber: product.week_number?.toString() || '',
     isVegan: product.is_vegan,
     isForStorytel: product.is_for_storytel,
