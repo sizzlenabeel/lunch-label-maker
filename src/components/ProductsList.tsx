@@ -291,7 +291,7 @@ export function ProductsList({ isAdmin = false }: ProductsListProps) {
                 <button
                   onClick={() =>
                     runBulk('food-zip', () =>
-                      downloadLabelsZip(foodProducts, `food-labels-week-${selectedWeek}.zip`),
+                      downloadLabelsZip(foodProducts, `food-labels-week-${selectedWeek}.zip`, bulkFontOverride),
                     )
                   }
                   disabled={foodProducts.length === 0 || bulkBusy !== null}
@@ -310,6 +310,7 @@ export function ProductsList({ isAdmin = false }: ProductsListProps) {
                       downloadLabelsCombinedPdf(
                         foodProducts,
                         `food-labels-week-${selectedWeek}.pdf`,
+                        bulkFontOverride,
                       ),
                     )
                   }
@@ -337,7 +338,7 @@ export function ProductsList({ isAdmin = false }: ProductsListProps) {
                 <button
                   onClick={() =>
                     runBulk('snack-zip', () =>
-                      downloadLabelsZip(snackProducts, `snack-labels-week-${selectedWeek}.zip`),
+                      downloadLabelsZip(snackProducts, `snack-labels-week-${selectedWeek}.zip`, bulkFontOverride),
                     )
                   }
                   disabled={snackProducts.length === 0 || bulkBusy !== null}
@@ -356,6 +357,7 @@ export function ProductsList({ isAdmin = false }: ProductsListProps) {
                       downloadLabelsCombinedPdf(
                         snackProducts,
                         `snack-labels-week-${selectedWeek}.pdf`,
+                        bulkFontOverride,
                       ),
                     )
                   }
