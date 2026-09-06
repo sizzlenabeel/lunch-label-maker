@@ -3,6 +3,7 @@ import { getWeek } from 'date-fns';
 import { supabase } from '@/integrations/supabase/client';
 import { AlertTriangle, Leaf } from 'lucide-react';
 import { StorytelLabelPDF } from './StorytelLabelPDF';
+import { LabelSlotPicker, allSlots } from './LabelSlotPicker';
 import type { FoodLabel } from '../types';
 
 export function StorytelLabelsView() {
@@ -13,6 +14,7 @@ export function StorytelLabelsView() {
   const [selectedWeek, setSelectedWeek] = useState(currentWeek);
   const [selectedProduct, setSelectedProduct] = useState<any | null>(null);
   const [fontSize, setFontSize] = useState<'normal' | 'small' | 'smaller'>('normal');
+  const [slots, setSlots] = useState<boolean[]>(allSlots());
 
   useEffect(() => {
     async function fetchStorytelProducts() {
@@ -107,7 +109,8 @@ export function StorytelLabelsView() {
               Back to Product List
             </button>
           </div>
-          <StorytelLabelPDF data={convertToLabelData(selectedProduct)} />
+          <LabelSlotPicker slots={slots} onChange={setSlots} accent="purple" />
+          <StorytelLabelPDF data={convertToLabelData(selectedProduct)} slots={slots} />
         </div>
       ) : loading ? (
         <div className="text-center py-4">
@@ -128,7 +131,7 @@ export function StorytelLabelsView() {
             <div
               key={index}
               className="border border-purple-200 rounded-lg p-4 hover:bg-purple-50 transition-colors cursor-pointer"
-              onClick={() => setSelectedProduct(product)}
+              onClick={() => { setSlots(allSlots()); setSelectedProduct(product); }}
             >
               <div className="flex justify-between items-start">
                 <h3 className="font-medium text-gray-900">{product.name}</h3>

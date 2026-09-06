@@ -116,14 +116,16 @@ const styles = StyleSheet.create({
 
 interface SnackLabelPDFProps {
   data: FoodLabel;
+  slots?: boolean[];
 }
 
-export function SnackLabelPDF({ data }: SnackLabelPDFProps) {
+export function SnackLabelPDF({ data, slots }: SnackLabelPDFProps) {
   const formattedDate = format(new Date(data.dueDate), 'yyyy-MM-dd');
-  
-  // Create arrays for left and right columns
-  const leftColumn = Array(8).fill(null);
-  const rightColumn = Array(8).fill(null);
+
+  const activeSlots = slots && slots.length === 16 ? slots : Array(16).fill(true);
+  const leftColumn = activeSlots.slice(0, 8);
+  const rightColumn = activeSlots.slice(8, 16);
+  const EmptyCell = () => <View style={{ width: LABEL_WIDTH, height: LABEL_HEIGHT }} />;
 
   const LabelContent = () => {
     const getTextStyle = () => {
@@ -186,14 +188,14 @@ export function SnackLabelPDF({ data }: SnackLabelPDFProps) {
       <Document>
         <Page size="A4" style={styles.page}>
           <View style={styles.column}>
-            {leftColumn.map((_, index) => (
-              <LabelContent key={`left-${index}`} />
-            ))}
+            {leftColumn.map((on, index) =>
+              on ? <LabelContent key={`left-${index}`} /> : <EmptyCell key={`left-${index}`} />
+            )}
           </View>
           <View style={styles.column}>
-            {rightColumn.map((_, index) => (
-              <LabelContent key={`right-${index}`} />
-            ))}
+            {rightColumn.map((on, index) =>
+              on ? <LabelContent key={`right-${index}`} /> : <EmptyCell key={`right-${index}`} />
+            )}
           </View>
         </Page>
       </Document>

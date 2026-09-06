@@ -240,3 +240,81 @@ export async function downloadLabelsCombinedPdf(
   const blob: Blob = await pdf(doc).toBlob();
   triggerDownload(blob, fileName);
 }
+
+// ---- Mixed sheets: N labels per dish, packed 16 per page ----
+
+const SLOTS_PER_PAGE = 16;
+
+function EmptyCell() {
+  return React.createElement(View, {
+    style: { width: LABEL_WIDTH, height: LABEL_HEIGHT },
+  });
+}
+
+type Cell = { data: FoodLabel; variant: LabelVariant } | null;
+
+function MixedPage({ cells }: { cells: Cell[] }) {
+  const padded: Cell[] = [...cells];
+  while (padded.length < SLOTS_PER_PAGE) padded.push(null);
+
+  const renderColumn = (offset: number, key: string) =>
+    React.createElement(
+      View,
+      { style: styles.column },
+      padded.slice(offset, offset + 8).map((cell, i) =>
+        cell
+          ? React.createElement(LabelCell, { key: `${key}-${i}`, data: cell.data, variant: cell.variant })
+          : React.createElement(EmptyCell, { key: `${key}-empty-${i}` }),
+      ),
+    );
+
+  return React.createElement(
+    Page,
+    { size: 'A4', style: styles.page },
+    renderColumn(0, 'L'),
+    renderColumn(8, 'R'),
+  );
+}
+
+function chunk<T>(items: T[], size: number): T[][] {
+  const out: T[][] = [];
+  for (let i = 0; i < items.length; i += size) out.push(items.slice(i, i + size));
+  return out;
+}
+
+export interface MixedLabelEntry {
+  product: any;
+  quantity: number;
+}
+
+export async function downloadMixedLabelSheets(
+  entries: MixedLabelEntry[],
+  fileName: string,
+  options?: { fontSizeOverride?: FontSize; newPagePerProduct?: boolean },
+) {
+  const fontSizeOverride = options?.fontSizeOverride;
+  const valid = entries.filter((e) => e.product && e.quantity > 0);
+  if (valid.length === 0) throw new Error('Enter at least one quantity');
+
+  const toCells = (entry: MixedLabelEntry): Cell[] => {
+    const data = productToLabel(entry.product, fontSizeOverride);
+    const variant = pickVariant(entry.product);
+    return Array.from({ length: entry.quantity }, () => ({ data, variant }));
+  };
+
+  let pages: Cell[][];
+  if (options?.newPagePerProduct) {
+    pages = valid.flatMap((entry) => chunk(toCells(entry), SLOTS_PER_PAGE));
+  } else {
+    pages = chunk(valid.flatMap(toCells), SLOTS_PER_PAGE);
+  }
+
+  const doc = React.createElement(
+    Document,
+    null,
+    pages.map((cells, i) => React.createElement(MixedPage, { key: i, cells })),
+  );
+
+  const blob: Blob = await pdf(doc).toBlob();
+  triggerDownload(blob, fileName);
+}
