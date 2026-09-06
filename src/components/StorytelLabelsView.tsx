@@ -128,7 +128,7 @@ export function StorytelLabelsView() {
             <div
               key={index}
               className="border border-purple-200 rounded-lg p-4 hover:bg-purple-50 transition-colors cursor-pointer"
-              onClick={() => setSelectedProduct(product)}
+              onClick={() => { setSlots(allSlots()); setSelectedProduct(product); }}
             >
               <div className="flex justify-between items-start">
                 <h3 className="font-medium text-gray-900">{product.name}</h3>
