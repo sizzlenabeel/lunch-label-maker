@@ -188,14 +188,14 @@ export function SnackLabelPDF({ data, slots }: SnackLabelPDFProps) {
       <Document>
         <Page size="A4" style={styles.page}>
           <View style={styles.column}>
-            {leftColumn.map((_, index) => (
-              <LabelContent key={`left-${index}`} />
-            ))}
+            {leftColumn.map((on, index) =>
+              on ? <LabelContent key={`left-${index}`} /> : <EmptyCell key={`left-${index}`} />
+            )}
           </View>
           <View style={styles.column}>
-            {rightColumn.map((_, index) => (
-              <LabelContent key={`right-${index}`} />
-            ))}
+            {rightColumn.map((on, index) =>
+              on ? <LabelContent key={`right-${index}`} /> : <EmptyCell key={`right-${index}`} />
+            )}
           </View>
         </Page>
       </Document>
