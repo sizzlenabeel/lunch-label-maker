@@ -146,12 +146,12 @@ export function ProductsList({ isAdmin = false }: ProductsListProps) {
   const renderLabelForProduct = (product: Product) => {
     const labelData = convertToLabelData(product);
     if (product.is_only_for_storytel) {
-      return <StorytelLabelPDF data={labelData} />;
+      return <StorytelLabelPDF data={labelData} slots={slots} />;
     }
     if (product.is_snack) {
-      return <SnackLabelPDF data={labelData} />;
+      return <SnackLabelPDF data={labelData} slots={slots} />;
     }
-    return <LabelPDF data={labelData} />;
+    return <LabelPDF data={labelData} slots={slots} />;
   };
 
   return (
@@ -392,6 +392,76 @@ export function ProductsList({ isAdmin = false }: ProductsListProps) {
               </div>
             </div>
           </div>
+
+          <div className="mt-4 border border-gray-200 rounded-md p-3 bg-white">
+            <div className="flex items-center justify-between flex-wrap gap-2 mb-2">
+              <span className="text-sm font-medium text-gray-800">
+                Label run (choose how many per dish)
+              </span>
+              <div className="flex items-center gap-3 flex-wrap">
+                <label className="text-xs text-gray-600 flex items-center gap-1">
+                  <input
+                    type="checkbox"
+                    checked={newPagePerProduct}
+                    onChange={(e) => setNewPagePerProduct(e.target.checked)}
+                    className="h-3.5 w-3.5"
+                  />
+                  Start each dish on a new page
+                </label>
+                <span className="text-xs text-gray-600">
+                  {totalRunLabels} labels · {totalRunSheets} sheet{totalRunSheets === 1 ? '' : 's'}
+                </span>
+                <button
+                  onClick={() =>
+                    runBulk('mixed', () =>
+                      downloadMixedLabelSheets(runEntries, `label-run-week-${selectedWeek}.pdf`, {
+                        fontSizeOverride: bulkFontOverride,
+                        newPagePerProduct,
+                      }),
+                    )
+                  }
+                  disabled={totalRunLabels === 0 || bulkBusy !== null}
+                  className="inline-flex items-center gap-1 px-3 py-1.5 rounded border-2 border-gray-800 text-sm text-white bg-gray-800 hover:bg-gray-900 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {bulkBusy === 'mixed' ? (
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                  ) : (
+                    <FileText className="w-4 h-4" />
+                  )}
+                  Build sheet PDF
+                </button>
+                <button
+                  onClick={() => setQuantities({})}
+                  disabled={totalRunLabels === 0}
+                  className="text-xs px-2 py-1 rounded border border-gray-300 text-gray-600 bg-white hover:bg-gray-100 disabled:opacity-50"
+                >
+                  Reset
+                </button>
+              </div>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 max-h-64 overflow-y-auto">
+              {products.map((product) => (
+                <div key={product.id} className="flex items-center gap-2">
+                  <input
+                    type="number"
+                    min={0}
+                    value={quantities[product.id] ?? ''}
+                    placeholder="0"
+                    onChange={(e) =>
+                      setQuantities((prev) => ({
+                        ...prev,
+                        [product.id]: Math.max(0, Math.floor(Number(e.target.value) || 0)),
+                      }))
+                    }
+                    className="w-16 text-sm border border-gray-300 rounded px-2 py-1"
+                  />
+                  <span className="text-sm text-gray-700 truncate" title={product.name || ''}>
+                    {product.name}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
       )}
 
@@ -408,6 +478,7 @@ export function ProductsList({ isAdmin = false }: ProductsListProps) {
               Back to Product List
             </button>
           </div>
+          <LabelSlotPicker slots={slots} onChange={setSlots} accent="orange" />
           {renderLabelForProduct(selectedProduct)}
         </div>
       ) : loading ? (
