@@ -7,7 +7,8 @@ import { StorytelMenuPDF } from './StorytelMenuPDF';
 import { LabelPDF } from './LabelPDF';
 import { StorytelLabelPDF } from './StorytelLabelPDF';
 import { SnackLabelPDF } from './SnackLabelPDF';
-import { downloadLabelsZip, downloadLabelsCombinedPdf } from '@/lib/bulkLabels';
+import { LabelSlotPicker, allSlots } from './LabelSlotPicker';
+import { downloadLabelsZip, downloadLabelsCombinedPdf, downloadMixedLabelSheets } from '@/lib/bulkLabels';
 import type { FoodLabel } from '../types';
 import type { Database } from '@/integrations/supabase/types';
 
