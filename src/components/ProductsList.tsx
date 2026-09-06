@@ -31,14 +31,30 @@ export function ProductsList({ isAdmin = false }: ProductsListProps) {
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [fontSize, setFontSize] = useState<'normal' | 'small' | 'smaller'>('normal');
   const scrollPositionRef = useRef(0);
-  type BulkJob = 'food-zip' | 'food-pdf' | 'snack-zip' | 'snack-pdf';
+  type BulkJob = 'food-zip' | 'food-pdf' | 'snack-zip' | 'snack-pdf' | 'mixed';
   const [bulkBusy, setBulkBusy] = useState<BulkJob | null>(null);
   const [bulkError, setBulkError] = useState<string | null>(null);
   const [bulkFontSize, setBulkFontSize] = useState<'auto' | 'normal' | 'small' | 'smaller'>('auto');
   const bulkFontOverride = bulkFontSize === 'auto' ? undefined : bulkFontSize;
+  const [slots, setSlots] = useState<boolean[]>(allSlots());
+  const [quantities, setQuantities] = useState<Record<string, number>>({});
+  const [newPagePerProduct, setNewPagePerProduct] = useState(false);
 
   const foodProducts = useMemo(() => products.filter((p) => !p.is_snack), [products]);
   const snackProducts = useMemo(() => products.filter((p) => p.is_snack), [products]);
+
+  const runEntries = useMemo(
+    () =>
+      products
+        .map((p) => ({ product: p, quantity: quantities[p.id] || 0 }))
+        .filter((e) => e.quantity > 0),
+    [products, quantities],
+  );
+  const totalRunLabels = runEntries.reduce((sum, e) => sum + e.quantity, 0);
+  const totalRunSheets = newPagePerProduct
+    ? runEntries.reduce((sum, e) => sum + Math.ceil(e.quantity / 16), 0)
+    : Math.ceil(totalRunLabels / 16);
+
 
   const runBulk = async (job: BulkJob, fn: () => Promise<void>) => {
     try {
@@ -55,6 +71,7 @@ export function ProductsList({ isAdmin = false }: ProductsListProps) {
 
   const handleProductClick = (product: Product) => {
     scrollPositionRef.current = window.scrollY;
+    setSlots(allSlots());
     setSelectedProduct(product);
   };
 
