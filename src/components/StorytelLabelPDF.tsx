@@ -98,14 +98,16 @@ const styles = StyleSheet.create({
 
 interface StorytelLabelPDFProps {
   data: FoodLabel;
+  slots?: boolean[];
 }
 
-export function StorytelLabelPDF({ data }: StorytelLabelPDFProps) {
+export function StorytelLabelPDF({ data, slots }: StorytelLabelPDFProps) {
   const formattedDate = format(new Date(data.dueDate), 'yyyy-MM-dd');
-  
-  // Create arrays for left and right columns
-  const leftColumn = Array(8).fill(null);
-  const rightColumn = Array(8).fill(null);
+
+  const activeSlots = slots && slots.length === 16 ? slots : Array(16).fill(true);
+  const leftColumn = activeSlots.slice(0, 8);
+  const rightColumn = activeSlots.slice(8, 16);
+  const EmptyCell = () => <View style={{ width: LABEL_WIDTH, height: LABEL_HEIGHT }} />;
 
   const LabelContent = () => {
     const getTextStyle = () => {
