@@ -3,6 +3,7 @@ import { getWeek } from 'date-fns';
 import { supabase } from '@/integrations/supabase/client';
 import { AlertTriangle, Leaf } from 'lucide-react';
 import { StorytelLabelPDF } from './StorytelLabelPDF';
+import { LabelSlotPicker, allSlots } from './LabelSlotPicker';
 import type { FoodLabel } from '../types';
 
 export function StorytelLabelsView() {
@@ -13,6 +14,7 @@ export function StorytelLabelsView() {
   const [selectedWeek, setSelectedWeek] = useState(currentWeek);
   const [selectedProduct, setSelectedProduct] = useState<any | null>(null);
   const [fontSize, setFontSize] = useState<'normal' | 'small' | 'smaller'>('normal');
+  const [slots, setSlots] = useState<boolean[]>(allSlots());
 
   useEffect(() => {
     async function fetchStorytelProducts() {
@@ -107,7 +109,8 @@ export function StorytelLabelsView() {
               Back to Product List
             </button>
           </div>
-          <StorytelLabelPDF data={convertToLabelData(selectedProduct)} />
+          <LabelSlotPicker slots={slots} onChange={setSlots} accent="purple" />
+          <StorytelLabelPDF data={convertToLabelData(selectedProduct)} slots={slots} />
         </div>
       ) : loading ? (
         <div className="text-center py-4">
