@@ -315,44 +315,65 @@ export function StorytelMenuPDF({ weekNumber, fontSize }: StorytelMenuProps) {
     const sorted = sortDays(item.deliveryDays);
     const key = sorted.join('|');
     if (!groupMap.has(key)) groupMap.set(key, { days: sorted, items: [] });
-    groupMap.get(key)!.items.push(item);
+    const group = groupMap.get(key);
+    if (group) group.items.push(item);
   });
 
   const groups = [...groupMap.values()].sort(
     (a, b) => days.indexOf(a.days[0]) - days.indexOf(b.days[0])
   );
 
+  const firstPageGroups = groups.filter((group) => {
+    const firstDay = group.days[0];
+    return firstDay === 'Monday' || firstDay === 'Tuesday';
+  });
+  const secondPageGroups = groups.filter((group) => {
+    const firstDay = group.days[0];
+    return firstDay === 'Wednesday' || firstDay === 'Thursday' || firstDay === 'Friday';
+  });
+
+  const renderHeader = () => (
+    <View style={styles.header}>
+      <Text style={getStyle('companyName')}>Sizzle</Text>
+      <Text style={getStyle('weekInfo')}>Week {weekNumber}</Text>
+      <Text style={getStyle('title')}>Weekly Menu</Text>
+    </View>
+  );
+
+  const renderGroups = (pageGroups: typeof groups) => (
+    pageGroups.length === 0 ? (
+      <Text style={getStyle('noDishes')}>No dishes scheduled</Text>
+    ) : (
+      pageGroups.map((group) => (
+        <View key={group.days.join('|')} style={getStyle('daySection')}>
+          <Text style={getStyle('dayHeader')}>{formatDays(group.days)}</Text>
+          {group.items.map((item, index) => (
+            <View key={`${group.days.join('-')}-${index}`} style={getStyle('menuItem')}>
+              <Text style={getStyle('itemName')}>{item.name}</Text>
+              <Text style={getStyle('description')}>{item.description}</Text>
+              <Text style={getStyle('allergens')}>Allergens: {item.allergens}</Text>
+              {item.isVegan ? (
+                <Text style={getStyle('veganBadge')}>Vegan</Text>
+              ) : item.isVegetarian ? (
+                <Text style={getStyle('veganBadge')}>Vegetarian</Text>
+              ) : null}
+            </View>
+          ))}
+        </View>
+      ))
+    )
+  );
+
   return (
     <PDFViewer width="100%" height="800px">
       <Document>
         <Page size="A4" style={styles.page}>
-          <View style={styles.header}>
-            <Text style={getStyle('companyName')}>Sizzle</Text>
-            <Text style={getStyle('weekInfo')}>Week {weekNumber}</Text>
-            <Text style={getStyle('title')}>Weekly Menu</Text>
-          </View>
-
-          {groups.length === 0 ? (
-            <Text style={getStyle('noDishes')}>No dishes scheduled</Text>
-          ) : (
-            groups.map((group) => (
-              <View key={group.days.join('|')} style={getStyle('daySection')}>
-                <Text style={getStyle('dayHeader')}>{formatDays(group.days)}</Text>
-                {group.items.map((item, index) => (
-                  <View key={`${group.days.join('-')}-${index}`} style={getStyle('menuItem')}>
-                    <Text style={getStyle('itemName')}>{item.name}</Text>
-                    <Text style={getStyle('description')}>{item.description}</Text>
-                    <Text style={getStyle('allergens')}>Allergens: {item.allergens}</Text>
-                    {item.isVegan ? (
-                      <Text style={getStyle('veganBadge')}>Vegan</Text>
-                    ) : item.isVegetarian ? (
-                      <Text style={getStyle('veganBadge')}>Vegetarian</Text>
-                    ) : null}
-                  </View>
-                ))}
-              </View>
-            ))
-          )}
+          {renderHeader()}
+          {renderGroups(firstPageGroups)}
+        </Page>
+        <Page size="A4" style={styles.page}>
+          {renderHeader()}
+          {renderGroups(secondPageGroups)}
         </Page>
       </Document>
     </PDFViewer>
